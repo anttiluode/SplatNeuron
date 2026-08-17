@@ -4,9 +4,9 @@ Date: 2026-08-17
 
 ## One-line thesis still alive
 
-> **Changing the observation map is useful only in a measurable regime where the current receiver has become stale enough to justify the acquisition cost.**
+> **Changing the observation map has a measurable value region, but increasingly intelligent online admission rules have not yet beaten strong boring fixed policies.**
 
-This is smaller and more defensible than the morning's growth story.
+The project is now much smaller than the morning's growth story.
 
 ## Current ledger
 
@@ -16,6 +16,7 @@ Boundary0  WAIT <-> oracle ROUTE                         analytic nonzero-overla
 Smoke 1    ROUTE -> GROW                                 growth loses to fixed plastic capacity
 Gate 2     continuous fixed-capacity ROUTE              FAIL vs address cache on confirmation
 Boundary1  cache <-> ROUTE vs world drift               clear sign change / value region
+Gate 3     adaptive admission / PROBE                    fixed validated threshold survives
 ```
 
 ## Smoke 0
@@ -111,15 +112,15 @@ hybrid - always       +0.061  95% CI [+0.007,+0.107]   survives
 Therefore:
 
 ```text
-GATE2_MECHANISM_KEEP = False   # strongest baseline survived
+GATE2_MECHANISM_KEEP = False
 GATE2_TASK_PERFORMANCE_CLAIM = NOT_ESTABLISHED
 ```
 
 Do not tune the drift or threshold to turn this frozen confirmation into a pass.
 
-## Boundary 1 — the useful thing Gate 2 exposed
+## Boundary 1 — cache versus ROUTE really is regime-dependent
 
-Instead of tuning one operating point, sweep environmental drift with capacity, budget, router, admission threshold, and field fixed.
+Sweep environmental drift with capacity, budget, router, admission threshold, and field fixed:
 
 ```text
 scale   cacheOv   routeOv   delta       95% CI
@@ -135,50 +136,107 @@ scale   cacheOv   routeOv   delta       95% CI
 4.00     0.090     0.266   +0.175   [+0.130,+0.222]
 ```
 
-This is the current strongest SplatNeuron result.
+At low drift, ROUTE is harmful because noisy admission triggers needless movement. At higher drift, stale fixed addresses lose observability and ROUTE repays its cost.
 
-At low drift, ROUTE is harmful because noisy admission triggers needless movement. At higher drift, stale fixed addresses lose observability and ROUTE repays its cost. The sign flips around the `0.75 -> 1.0` drift-scale region.
+Important correction: this sign change is partly policy-specific. Development sweeps showed that lowering the fixed threshold from `0.72` toward `0.45-0.55` sharply reduces low-drift false routes. Therefore Boundary 1 is evidence for a value region, not evidence that a fancy adaptive conductor is necessary.
 
-So the live question is no longer "should neurons move?" It is:
+## Gate 3 — adaptive admission fails the best fixed threshold
 
-> **Can a receiver estimate the expected value of changing its own observation map from information it can actually observe?**
-
-That is Kynnys-like admission applied inside the receiver itself.
-
-## Immediate next gate
-
-Do **not** tune one fixed admission threshold on Boundary 1 and declare victory.
-
-Next build should learn/derive an admission policy from observable quantities such as:
+A separate drift × noise validation grid selected the strongest boring fixed admission threshold from:
 
 ```text
-current evidence magnitude
-recent evidence trend
-receiver age / time since last route
-route success history
-local probe disagreement
-estimated environmental hazard
+0.25, 0.35, 0.45, 0.55, 0.65
 ```
 
-and compare it against:
+Winner:
 
 ```text
-fixed threshold sweep
-always WAIT
-always ROUTE
-best validation-selected fixed threshold
-simple Bayesian / hazard rule
+fixed threshold = 0.45
 ```
 
-Then freeze it and test on **new combinations of drift and observation noise**, not the Boundary 1 sweep used to design it.
+Then two more intelligent policies were frozen:
 
-A useful win condition would be a lower regret to the per-regime oracle action (`WAIT` or `ROUTE`) across unseen regimes, not merely better performance at one hand-picked drift rate.
+```text
+HAZARD
+successful receiver displacement raises future willingness to ROUTE
+
+PROBE BAND
+strong evidence       -> WAIT
+weak evidence         -> ROUTE
+ambiguous evidence    -> confirm once, then decide
+```
+
+Fresh confirmation:
+
+```text
+drift = {0.25, 1, 3}
+noise = {0.15, 0.24, 0.34}
+seeds = 14000..14005
+```
+
+Mean late overlap across all nine cells:
+
+```text
+fixed 0.45    0.595   cells won 6/9
+hazard        0.553   cells won 0/9
+PROBE band    0.583   cells won 3/9
+```
+
+Seed-paired aggregate contrasts:
+
+```text
+hazard - fixed   -0.042   95% CI [-0.072,-0.007]
+PROBE  - fixed   -0.012   95% CI [-0.039,+0.024]
+```
+
+So:
+
+```text
+ADAPTIVE_HAZARD_EARNS_KEEP = False
+PROBE_BAND_EARNS_KEEP = False
+GATE3_FIXED_THRESHOLD_SURVIVES = True
+```
+
+The adaptive policies had recognizable local value regions, but neither beat a validation-selected fixed rule over unseen regimes.
+
+This mirrors `WildIdea` W4b: once the boring fixed policy is selected honestly, an apparent adaptive increment can disappear.
+
+Do not tune Gate 3 further. It is closed.
+
+## What survives now
+
+The strongest current result is not a new neuron architecture. It is a constrained observation-control fact:
+
+> **WAIT, PROBE and ROUTE have different value regions under receiver staleness and observation noise, but simple fixed policies remain extremely strong in stationary synthetic families.**
+
+Continuous receiver geometry is now real in code, and persistent receiver state sometimes matters, but SplatNeuron has not yet earned a distinct ML architecture claim.
+
+## Legitimate next direction
+
+Do **not** open another static drift/noise grid and tune a smarter policy.
+
+A legitimate continuation needs the operating regime itself to change **within one run**, so a fixed validation-selected threshold cannot simply average over one stationary family.
+
+For example:
+
+```text
+quiet / low-noise
+    -> sudden high-noise period
+    -> fast geometric drift
+    -> quiet again
+```
+
+The strongest baseline must still be the best robust fixed threshold selected before test.
+
+Measure **regret to the best action for each segment**, transition/recovery cost, and whether an online policy can identify that the regime changed without receiving a regime label.
+
+If adaptive admission still fails there, close the admission branch and move to a different SplatNeuron claim.
 
 ## Gabor-specific stopping line
 
 Gate 2 finally makes Gabor geometry algebraically real rather than decorative list ordering. It still has not shown Gabors are necessary.
 
-If an arbitrary smooth continuous coordinate field with matched response correlation gives the same admission/routing behavior, keep the generic active-sensing result and drop the Gabor-specific claim.
+If an arbitrary smooth continuous coordinate field with matched response correlation gives the same behavior, keep the generic active-sensing result and drop the Gabor-specific claim.
 
 ## Growth reopening condition
 
@@ -193,7 +251,8 @@ Only then can structural birth/death buy something preallocation cannot. Any fut
 ## Stop lines
 
 - Do not rescue Gate 2 by tuning its frozen operating point.
+- Do not rescue Gate 3 by tuning adaptive parameters on its confirmation regimes.
 - Do not rescue growth by weakening fixed-capacity baselines.
 - Do not call higher receiver-target overlap an ML performance win unless downstream task performance also separates.
-- Do not add private recurrent state/write-back until admission/ROUTE earns itself against strong fixed policies on unseen regimes.
+- Do not add private recurrent state/write-back until ROUTE/admission earns itself against strong fixed policies in a genuinely nonstationary task.
 - Do not call the result Gabor-specific until a matched generic continuous geometry loses.
