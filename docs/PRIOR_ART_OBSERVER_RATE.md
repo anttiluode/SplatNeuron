@@ -46,6 +46,8 @@ Studies learning approximations from structured matrix families in a general ope
 
 - PMLR: https://proceedings.mlr.press/v336/amsel26a.html
 
+Structured sensing matrices in compressed sensing are also long-established partly because fully random/dense sensing matrices can be expensive to store, multiply and implement in hardware. Therefore even `measurement-operator structure can reduce storage/implementation cost` is occupied territory.
+
 ## 3. Compact parameterized filters are established
 
 Existing repo prior art already includes GaborNet, SincNet, LEAF and EfficientLEAF.
@@ -78,20 +80,52 @@ Therefore `quantize parameters after training and plot accuracy versus bits` is 
 
 ## 5. Quantized measurements / bit budgets in compressive sensing are established
 
-The compressed-sensing literature has long studied measurement bit depth and rate-distortion, including one-bit and multi-bit acquisition. Examples include Laska & Baraniuk's bit-depth-versus-measurement-rate analysis and later quantized compressed-sensing work.
+The compressed-sensing literature has long studied measurement bit depth and rate-distortion, including one-bit and multi-bit acquisition.
 
 This is importantly **not the same object as Gate 11**: those papers generally charge bits for the *measurements/data produced by a sensing matrix*, while Gate 11 charges bits for the *description of the sensing/observation operator itself*.
 
-Do not blur these two rates:
+Do not blur these rates:
 
 ```text
-measurement/data rate       bits in z = C(x)
 operator/map rate           bits needed to specify C
+representation/data rate    bits in z = C(x) per sample
+physical channel rate       bandwidth / bits per second used to transport z
 ```
 
-SplatNeuron Gate 11 currently studies the second while holding the first to a fixed logical width.
+SplatNeuron Gate 11 currently studies the first while holding logical width fixed.
 
-## 6. What the targeted search did not establish
+## 6. Multi-metric efficiency / Pareto accounting is established
+
+The broad lesson that parameter count, FLOPs, activation memory, wall time and other deployment costs are not interchangeable is also established.
+
+**Dollár, Singh & Girshick, 2021 — Fast and Accurate Model Scaling (CVPR).**
+
+Shows that model scaling strategies with similar accuracy/FLOPs can have very different activation counts and actual runtime, and argues for analyzing scaling under multiple computational constraints.
+
+- CVF Open Access: https://openaccess.thecvf.com/content/CVPR2021/html/Dollar_Fast_and_Accurate_Model_Scaling_CVPR_2021_paper.html
+
+**Nauen et al., 2025 — Which Transformer to Favor: A Comparative Analysis of Efficiency in Vision Transformers (WACV).**
+
+Benchmarks efficiency across accuracy, speed and memory and explicitly uses Pareto fronts rather than one scalar efficiency claim.
+
+- CVF Open Access: https://openaccess.thecvf.com/content/WACV2025/html/Nauen_Which_Transformer_to_Favor_A_Comparative_Analysis_of_Efficiency_in_WACV_2025_paper.html
+
+Therefore the repo cannot claim novelty from:
+
+> `parameters != FLOPs != latency != memory`.
+
+The narrower useful discipline here is to apply multi-currency accounting specifically across an **observation pipeline**, where additional quantities are easy to conflate:
+
+```text
+operator-description payload
+materialized operator storage
+per-sample representation width
+physical channel rate / interference
+decoder state / compute
+training/search cost
+```
+
+## 7. What the targeted search did not establish
 
 The search did **not** establish that the following exact protocol is standard:
 
@@ -122,7 +156,7 @@ implicit / hypernetwork parameterizations of linear operators
 minimum-description-length / rate-distortion views of model families
 ```
 
-## 7. Correct novelty boundary after Gate 11b
+## 8. Correct novelty boundary after Gate 11b
 
 Do not claim:
 
@@ -138,24 +172,12 @@ What could have failed on MNIST, and did not, was **expressivity**: the same sma
 
 Gate 12 attacks that result on CIFAR-10 and allows compact capacity `M` to grow. If compact rate rises with task complexity while remaining on a useful Pareto frontier against PCA/DCT, the defensible contribution is a measured resource-allocation / operator-rate protocol, not discovery of structured matrices.
 
-## 8. SpectralNeuron bridge boundary
+## 9. SpectralNeuron bridge boundary
 
 A linear shared carrier plus noise and a linear demultiplexer is standard communications / MIMO territory. Frequency-division, code-division and generic linear mixing all have mature theory.
 
-Therefore a bridge experiment is not interesting if it merely rediscovers channel capacity.
+Task-oriented / semantic communications and deep joint source-channel coding also already learn task-relevant representations specifically to survive constrained/noisy channels.
 
-The potentially less trivial coupling question is:
+Therefore a bridge experiment is not interesting if it merely rediscovers channel capacity or learned task-oriented communications.
 
-> **Can spending description budget in the observation map change the separability/interference structure of the consequences that must traverse a constrained carrier?**
-
-That is a joint frontier between:
-
-```text
-L_map     observation-map description
-M_logic   logical width
-I_cross   carrier interference/crosstalk
-Q_decode  decoder/demultiplexer work
-R_task    task error
-```
-
-Any future bridge must include generic linear/code-division attackers so FDM cannot win by construction.
+Any future bridge must include generic linear/code-division and task-oriented learned attackers and must ask a narrower resource-accounting question.
