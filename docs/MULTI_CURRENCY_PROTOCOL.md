@@ -39,7 +39,34 @@ Q_decode    task-decoder compute
 latency     measured wall time
 ```
 
-Also state which algorithmic family description is treated as shared side information. `L_map` is therefore a conditional learned-parameter payload, not Kolmogorov complexity.
+## `L_map` is schema-conditional, not a standalone file size
+
+Gate 11/12 payloads charge the **learned values** after the family/schema is agreed in advance.
+
+For example, a 24-byte compact payload assumes both endpoints already know:
+
+```text
+family = steerable Gaussian derivative or Gabor
+parameter order and ranges
+M / branch count
+bit depth / fixed-width codec
+normalization convention
+renderer / sampling rule
+```
+
+Likewise, DCT's `0 B` means zero **learned map payload** given a shared DCT algorithm; it does not mean that an implementation contains literally zero code or metadata.
+
+Current `L_map` excludes fixed headers such as family ID, `M`, bit depth and schema version. At payloads as small as 24 bytes, a real self-describing file header could be a nontrivial fraction of total bytes.
+
+Therefore write:
+
+> `24 B learned operator payload under the shared schema`
+
+rather than:
+
+> `the whole observer is a 24-byte file`.
+
+`L_map` is conditional description length under a stated model family, not Kolmogorov complexity.
 
 ## Fixed-error rule
 
