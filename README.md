@@ -1,224 +1,215 @@
 # SplatNeuron
 
-> **How much description, compute, and communication does a useful observation map require?**
+> **How much description, compute, communication, and selectivity does a useful observation map require?**
 
-SplatNeuron began as a speculative “splats as neurons” project. Strong controls killed most of that story. The repository is now a narrower research program about **observation-map allocation**: what should be preserved by the receiver, how compactly can that receiver be described, and how much downstream computation is required afterward?
+SplatNeuron began as “splats as neurons.” Strong controls killed most of that story. The live project is now an **observer resource frontier**: how a rich input is reduced to a small set of consequences, how compactly that observation map can be described, how much downstream decoding it requires, and what happens when those consequences must share a physical medium.
 
-No novelty, neuroscience, or hardware claim is currently made.
+No novelty, neuroscience, frequency-coding, or hardware claim is currently made.
 
-## Current ledger
-
-```text
-Smoke 0    WAIT/ROUTE plumbing                          original WAIT null constructed
-Smoke 1    online branch growth                         fixed plastic capacity wins
-Gate 2     continuous ROUTE                             address cache survives
-Gate 3/4   adaptive admission                           strong fixed policies survive
-Gate 5     Gabor-specific ROUTE                         generic smooth manifold reproduces it
-Gate 6     learned receiver vs random-frozen receiver   large parameter-count gap
-Gate 7/8   interior/pre-collapse allocation             no interior Y block
-Gate 9     PCA/DCT fixed-basis attack                    PCA closes Gate-6 accuracy gap
-```
-
-The full negative history is preserved in [`HANDOFF_CURRENT.md`](HANDOFF_CURRENT.md).
-
-## Gate 9 changes the interpretation of Gate 6
-
-Gate 6 fixed the transmitted width at **16 real measurements** and compared:
+## Ledger
 
 ```text
-learned Gabor receiver + linear head     202 trainable params   95.24%
-random-frozen same Gabor + H7 MLP        199 trainable params   89.76%
+Smoke 0    WAIT/ROUTE plumbing                       original WAIT null constructed
+Smoke 1    online branch growth                      fixed plastic capacity wins
+Gate 2     continuous ROUTE                          address cache survives
+Gate 3/4   adaptive admission                        strong fixed policies survive
+Gate 5     Gabor-specific ROUTE                      generic smooth manifold reproduces it
+Gate 6     learned vs random-frozen receiver         large small-budget gap
+Gate 7/8   mixed/pre-collapse allocation             no interior Y block
+Gate 9     PCA/DCT fixed-basis attack                PCA closes Gate-6 accuracy gap
+Gate 10    28x28 MNIST scale                         resource currencies split
+Gate10b/c  matched compact families                  Gaussian derivatives match Gabor
 ```
 
-Increasing the decoder behind the same frozen measurements eventually recovered the learned-receiver score around `~1306` trainable decoder parameters.
+The negative history is part of the result. See [`HANDOFF_CURRENT.md`](HANDOFF_CURRENT.md).
 
-That looked like a strong receiver-vs-decoder parameter frontier.
+## Gate 9: the missing PCA control changed Gate 6
 
-But the frozen receiver had been initialized randomly. Gate 9 adds the missing strong fixed bases on the same eight split IDs:
+Gate 6 fixed egress at **16 real measurements** and found on 8x8 sklearn digits:
 
 ```text
-PCA-16 + linear      ~95.42%
-DCT-16 + linear      ~92.85%
-learned Gabor        ~95.24%   (Gate 6 reported mean)
+learned Gabor + linear head           202 trainable params   95.24%
+random-frozen same Gabor + H7 MLP     199 trainable params   89.76%
 ```
 
-PCA therefore **essentially closes the Gate-6 accuracy gap** without task labels selecting the measurement subspace.
+But the frozen map was random. Gate 9 adds strong fixed bases on the same eight split IDs:
 
-So the repo should not lead with:
+```text
+PCA-16 + linear       95.42%
+learned Gabor         95.24%
+DCT-16 + linear       92.85%
+```
 
-> learning what to observe is uniquely powerful.
+Paired PCA-minus-Gabor:
 
-A large part of Gate 6 was simply:
+```text
++0.17 percentage points
+95% bootstrap CI [-0.87,+1.15]
+```
 
-> **random frozen Gabors are a poor 16-channel basis.**
+So PCA and learned Gabor are not separated. Gate 6 does **not** establish that task-trained sensing beats a good fixed 16-channel basis.
+
+What remained interesting was the map description:
+
+```text
+dense 16-channel map       16 * D coefficients
+8 compact receivers        32 geometry scalars
+ratio                       D / 2
+```
+
+At 8x8 (`D=64`): `32x` map-only description ratio.
 
 See [`docs/GATE9_MEASUREMENT_MAP_CONTROLS.md`](docs/GATE9_MEASUREMENT_MAP_CONTROLS.md).
 
-## The sharper surviving axis: measurement-map description cost
+## Gate 10: scaling to 28x28 gives different answers in different currencies
 
-Let input dimension be `D` and transmitted width be `M=16`.
-
-A dense linear map such as PCA stores:
+The same compact receiver budget was moved to real MNIST without increasing its geometry parameter count:
 
 ```text
-16 * D
+D                    784
+logical outputs       16 real values
+compact map           32 geometry scalars
+seeds                 9100, 9101
 ```
 
-projection coefficients.
-
-Eight complex Gabor receivers emit the same 16 real values but are described by only four geometric scalars each:
+Frozen two-seed result:
 
 ```text
-8 receivers * (x, y, frequency, orientation) = 32 scalars
+                           mean accuracy
+----------------------------------------
+learned compact Gabor          88.33%
+PCA-16                         85.23%
+DCT-16                         83.39%
+random compact Gabor + H7      85.95%
+random compact Gabor + H48     91.58%
+full 784 pixels + linear       90.82%
 ```
 
-Therefore the dense-projection / geometry-description ratio is:
+Three resource trends separate:
 
 ```text
-(16 D) / 32 = D / 2
+map-description advantage
+    32x at D=64  ->  392x at D=784          GROWS
+
+matched tiny-decoder advantage
+    +5.49 points -> +2.38 points             SHRINKS
+
+generic dense digital MAC ratio
+    ~1.92x -> ~1.086x                        COLLAPSES TOWARD 1
 ```
 
-Examples:
+At `D=784`, PCA stores `12,544` projection coefficients while the compact map uses 32 geometry scalars. Including an explicit PCA mean and the common linear head at FP32:
 
 ```text
-8x8 input     D=64      1024 / 32 = 32x
-28x28 input   D=784    12544 / 32 = 392x
+compact geometry + head       808 B
+PCA map + mean + head       53992 B
 ```
 
-At FP32 on the current 8x8 task, counting the explicit PCA mean:
+But if both are materialized as dense digital filters, both still pay the common `16*784 = 12,544` projection MACs. **Description compression is not automatically compute compression.**
+
+See [`docs/GATE10_MNIST_SCALE.md`](docs/GATE10_MNIST_SCALE.md).
+
+## Gate 10b/c: frequency does not earn the scale result
+
+Simple nonoscillatory compact maps initially lost:
 
 ```text
-Gabor geometry + linear head           808 B
-PCA matrix + mean + linear head       5032 B
+learned points                79.84%
+Gaussian pair, best width     85.27%
+Gabor                         88.33%
 ```
 
-The current candidate claim is therefore not about frequency and not primarily about receiver *learning*:
-
-> **A compact structured measurement map may approach the quality of a much more richly described unstructured projection.**
-
-That is only a small-data receipt until the exchange rate is tested with scale.
-
-## Parameter count was overstating compute efficiency
-
-If Gabor filters are materialized digitally at inference, both learned Gabor and PCA still perform 16 dot products over all `D` input values.
-
-For `D=64`:
+That might tempt a frequency story. A stronger matched nonoscillatory attacker kills it:
 
 ```text
-measurement projection                  1024 MACs   (both)
+8 steerable Gaussian-derivative branches
+(x,y,scale,orientation)       32 map scalars
+first + second derivatives    16 outputs
+linear head                   same 170 params
 
-learned Gabor + linear head
-  projection + 16->10                   1184 MACs
-
-fixed Gabor + H48 decoder
-  projection + 16->48->10               2272 MACs
+Gaussian derivative           88.56%
+Gabor                         88.33%
 ```
 
-So the old `~6.5x` trainable-parameter ratio becomes only about **1.9x in this simple MAC accounting**, before activation/generation costs.
-
-And all Gate-6/9 constrained arms emit exactly:
+Two frozen seeds agree. The tiny difference is not a superiority claim; it is a falsification:
 
 ```text
-16 FP32 values = 64 bytes/sample
+GABOR_OR_FREQUENCY_SPECIFIC_KEEP = False
 ```
 
-so there is **no egress-bandwidth win** inside Gate 6.
+The surviving object is **compact structured localized selectivity**, not oscillation.
 
-## Why SpectralNeuron belongs on the same ladder
+See [`docs/GATE10BC_COMPACT_FAMILY_ATTACKERS.md`](docs/GATE10BC_COMPACT_FAMILY_ATTACKERS.md).
 
-[`anttiluode/SpectralNeuron`](https://github.com/anttiluode/SpectralNeuron) asks the rung immediately below this one.
+## SpectralNeuron really does belong here — one rung lower
 
-Its bucket detector collapses a shared signal to total power; its resonant forks preserve selective frequency channels. At matched loud power the fork distinguishes on-band from off-band input while the bucket aliases them, and three forks sharing one noisy wire recover their own messages with about `3.1x` self/crosstalk separation versus `1.0x` for buckets.
+[`anttiluode/SpectralNeuron`](https://github.com/anttiluode/SpectralNeuron) asks a complementary question.
 
-That does **not** make frequency the general principle. It makes **selectivity under a shared-medium interference budget** explicit.
+Its bucket collapses a waveform to total power; its resonant forks preserve selective channels. With three modulated carriers on one shared noisy wire, forks achieved about `3.1x` self/crosstalk separation versus `1.0x` for the bucket, with finite off-diagonal leakage.
 
-The relation is:
+That is ordinary frequency-division multiplexing in neuron-flavoured primitives. Its value here is that it exposes a resource Gate 6/9/10 fixed by fiat:
+
+> **logical channels sharing one physical medium interfere.**
+
+So the common pipeline is:
 
 ```text
-SpectralNeuron
-    how much distinction survives a shared carrier?
-    -> selectivity / multiplexing / crosstalk
-
-SplatNeuron
-    how costly is the selective observation map and decoder?
-    -> map description / compute / transmitted width
+rich input x
+    -> observation map C_theta
+    -> M logical consequences z
+    -> shared physical channel H
+    -> receiver/demultiplexer R
+    -> recovered consequences
+    -> decoder g_phi
+    -> task
 ```
 
-See [`docs/SPECTRALNEURON_RELATION.md`](docs/SPECTRALNEURON_RELATION.md).
+SplatNeuron has mostly studied the cost/quality of `C_theta` and `g_phi` while pretending `H=I`. SpectralNeuron studies selective `H/R` under crosstalk.
 
-## Gate 8 remains a useful null
+The common principle is **selectivity under resource constraints**, not “thought is frequency.”
 
-The hoped-for pre-collapse architecture did not appear.
+See [`docs/SPECTRALNEURON_RELATION.md`](docs/SPECTRALNEURON_RELATION.md) and [`docs/OBSERVER_RESOURCE_FRONTIER.md`](docs/OBSERVER_RESOURCE_FRONTIER.md).
 
-At fixed 16-wide carrier and roughly `~750` trainable parameters, increasing private Gabor branches and collapsing them locally produced no interior winner:
+## Next: Gate 11 should measure description *bits*, not float counts
+
+`32 geometry scalars versus 12,544 PCA coefficients` is still only a proxy for description length.
+
+Both maps can be quantized or compressed. DCT is largely algorithmic. A serious next gate should therefore measure a rate-distortion curve for the observation operator itself:
 
 ```text
-B8 direct / H27            96.11%
-B10 collapse / H14         94.95%
-B12 collapse / H11         94.63%
-B14 collapse / H8          93.84%
-B16 collapse / linear      95.46%
+bits needed to serialize C
+        versus
+task accuracy after quantization/compression
 ```
+
+For each map family report separately:
 
 ```text
-INTERIOR_Y_BLOCK_EARNS_KEEP = False
+map-description bits
+materialized storage
+projection MACs / FLOPs
+wall time / memory traffic
+logical egress width and bytes
+physical-channel/crosstalk cost when present
+downstream decoder state and compute
 ```
 
-See [`docs/GATE8_PRECOLLAPSE_FRONTIER.md`](docs/GATE8_PRECOLLAPSE_FRONTIER.md).
-
-## The next decisive test is scale
-
-The structured-map argument makes a concrete prediction:
-
-```text
-structured receiver description      O(1) per receiver
-dense unstructured map               O(D) per channel
-```
-
-The open question is whether the **useful exchange rate** follows that storage law.
-
-Measure across increasing input dimension / an external dataset:
-
-```text
-accuracy
-map-description bytes
-materialized model bytes
-MACs / FLOPs
-wall time
-memory traffic
-egress bytes
-```
-
-Possible outcomes:
-
-```text
-advantage decays toward 1x
-    -> small representation-compression note
-
-accuracy holds while description ratio grows
-    -> useful edge/embedded allocation heuristic
-
-accuracy/resource advantage itself grows with D
-    -> candidate allocation law worth pursuing
-```
-
-Do not add another neuron metaphor before this test.
+Do not collapse these into one number called “efficiency.” Gate 10 already shows they scale differently.
 
 ## Run
-
-Core synthetic history:
 
 ```bash
 python -m pip install -e .
 python -m unittest discover -s tests -v
-```
 
-Learning / measurement-map experiments:
-
-```bash
 pip install -e '.[gate6]'
 python experiments/gate6_receiver_frontier.py --full
 python experiments/gate9_measurement_map_controls.py --full
+
+pip install -e '.[scale]'
+python experiments/gate10_mnist_scale_v2.py --download
+python experiments/gate10b_compact_family.py --download
+python experiments/gate10c_gaussian_derivative.py --download
 ```
 
-See [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) for the occupied territory around learnable front ends, structured filters, and task-driven sensing.
+See [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) for occupied territory around compact learnable front ends and task-driven sensing.
