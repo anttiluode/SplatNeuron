@@ -28,9 +28,27 @@ def summarize(correct: list[bool], work: list[int]) -> BlockScore:
 
 
 def choose_targets(geoms):
-    a = min(range(len(geoms)), key=lambda i: abs(geoms[i].x - 0.14) + abs(geoms[i].y - 0.14) + abs(geoms[i].freq - 2.0) + abs(geoms[i].theta - 0.0))
-    b = min(range(len(geoms)), key=lambda i: abs(geoms[i].x - 0.86) + abs(geoms[i].y - 0.86) + abs(geoms[i].freq - 8.0) + abs(geoms[i].theta - np.pi / 2.0))
+    a = min(
+        range(len(geoms)),
+        key=lambda i: abs(geoms[i].x - 0.14)
+        + abs(geoms[i].y - 0.14)
+        + abs(geoms[i].freq - 2.0)
+        + abs(geoms[i].theta - 0.0),
+    )
+    b = min(
+        range(len(geoms)),
+        key=lambda i: abs(geoms[i].x - 0.86)
+        + abs(geoms[i].y - 0.86)
+        + abs(geoms[i].freq - 8.0)
+        + abs(geoms[i].theta - np.pi / 2.0),
+    )
     return a, b
+
+
+def construction_overlap() -> float:
+    geoms, _, gram = make_default_bank()
+    a, b = choose_targets(geoms)
+    return float(abs(gram[a, b]))
 
 
 def run_seed(seed: int, block_len: int = 50, wait_repeats: int = 300):
@@ -78,8 +96,11 @@ def run_seed(seed: int, block_len: int = 50, wait_repeats: int = 300):
     for name, tr in traces.items():
         out[name] = {
             "A1": summarize(tr["correct"][:block_len], tr["work"][:block_len]),
-            "B": summarize(tr["correct"][block_len:2*block_len], tr["work"][block_len:2*block_len]),
-            "A2": summarize(tr["correct"][2*block_len:], tr["work"][2*block_len:]),
+            "B": summarize(
+                tr["correct"][block_len : 2 * block_len],
+                tr["work"][block_len : 2 * block_len],
+            ),
+            "A2": summarize(tr["correct"][2 * block_len :], tr["work"][2 * block_len :]),
         }
     return out
 
@@ -102,50 +123,53 @@ def aggregate(seeds=range(20)):
     return agg
 
 
-def gate_verdict(agg):
-    fixed_b = agg["fixed"]["B"]
-    wait_b = agg["wait"]["B"]
+def smoke_checks(agg, overlap: float):
     route_b = agg["route"]["B"]
     con_b = agg["consolidate"]["B"]
     con_a1 = agg["consolidate"]["A1"]
     con_a2 = agg["consolidate"]["A2"]
 
     return {
-        "fixed_offsupport_near_chance": fixed_b.accuracy <= 0.65,
-        "wait_cannot_restore_missing_view": wait_b.accuracy <= 0.65,
-        "route_recovers_distinction": route_b.accuracy >= 0.95,
-        "consolidate_preserves_accuracy": con_b.accuracy >= 0.95,
+        "A_B_target_overlap_is_machine_zero": overlap < 1e-10,
+        "route_finds_constructed_target": route_b.accuracy >= 0.95,
+        "consolidate_preserves_constructed_accuracy": con_b.accuracy >= 0.95,
         "shift_causes_search_spike": con_b.first5_work >= max(5.0, 5.0 * con_a1.last10_work),
         "repeated_use_shortens_route": con_b.last10_work <= 0.35 * con_b.first5_work,
-        "consolidation_beats_route_only_late": con_b.last10_work <= 0.35 * route_b.last10_work,
         "return_shift_spikes_again": con_a2.first5_work >= max(5.0, 5.0 * con_b.last10_work),
         "return_relearns": con_a2.last10_work <= 0.35 * con_a2.first5_work,
     }
 
 
-def print_report(agg, checks):
-    print("Gate 0 — ROUTE -> CONSOLIDATE")
-    print("real complex Gabor bank; 20 deterministic seeds")
+def print_report(agg, overlap, checks):
+    print("Smoke 0 — ROUTE -> CONSOLIDATE")
+    print("This is a construction/mechanism smoke test, not an evidence receipt.")
+    print(f"|Gram[home_A,target_B]| = {overlap:.3e}")
+    print("The WAIT failure is therefore built into the target geometry and is not a hypothesis test.")
     print()
     print(f"{'policy':<14} {'block':<4} {'acc':>7} {'meanW':>9} {'first5W':>9} {'last10W':>9}")
     print("-" * 58)
     for name in ("fixed", "wait", "route", "consolidate"):
         for block in ("A1", "B", "A2"):
             s = agg[name][block]
-            print(f"{name:<14} {block:<4} {s.accuracy:7.3f} {s.mean_work:9.2f} {s.first5_work:9.2f} {s.last10_work:9.2f}")
+            print(
+                f"{name:<14} {block:<4} {s.accuracy:7.3f} {s.mean_work:9.2f} "
+                f"{s.first5_work:9.2f} {s.last10_work:9.2f}"
+            )
     print()
     for key, ok in checks.items():
-        print(f"{key:<42} {'PASS' if ok else 'FAIL'}")
-    print(f"\nGATE0_PASS = {all(checks.values())}")
+        print(f"{key:<48} {'PASS' if ok else 'FAIL'}")
+    print(f"\nSMOKE0_PASS = {all(checks.values())}")
+    print("WAIT_VS_ROUTE_EVIDENCE_CLAIM = NOT_TESTED")
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", type=int, default=20)
     args = parser.parse_args()
+    overlap = construction_overlap()
     agg = aggregate(range(args.seeds))
-    checks = gate_verdict(agg)
-    print_report(agg, checks)
+    checks = smoke_checks(agg, overlap)
+    print_report(agg, overlap, checks)
     if not all(checks.values()):
         raise SystemExit(1)
 
