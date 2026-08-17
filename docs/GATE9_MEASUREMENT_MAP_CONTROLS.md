@@ -19,26 +19,33 @@ DCT-16   data-free; first 16 2-D DCT modes in zig-zag order
 
 Both feed the same `16 -> 10` linear head (170 trainable parameters) and transmit the same 16 real values as Gate 6.
 
-## Independent reproduction on Gate 6 split IDs
+## Paired reproduction on Gate 6 split IDs
 
-Using deterministic linear-head training on the same eight split IDs `6000..6007`:
+Gate 6's learned-Gabor arm was rerun locally using its exact split/init/training protocol on `6000..6007`, then paired against the Gate-9 controls on the same split IDs.
 
-```text
-PCA-16 + linear   mean 95.42%
-DCT-16 + linear   mean 92.85%
-```
-
-The previously reported Gate 6 learned-Gabor mean on those eight split IDs is:
+Means:
 
 ```text
 learned Gabor + linear   95.24%
+PCA-16 + linear          95.42%
+DCT-16 + linear          92.85%
 ```
 
-The exact decimal comparison depends on optimizer/initialization details for the linear head, so the supported conclusion is deliberately coarse:
+Paired bootstrap contrasts:
 
-> **PCA-16 essentially closes the Gate 6 accuracy gap. A large part of the original learned-vs-frozen result was 'random frozen Gabors are a poor 16-channel basis', not a unique advantage of task-trained receiver geometry.**
+```text
+PCA - learned Gabor   +0.17 percentage points
+95% CI                [-0.87, +1.15]
 
-DCT-16 is also a strong zero-task-learning control: it clearly beats the original fixed-random-Gabor matched-budget arm, though it remains below PCA/learned-Gabor accuracy in this implementation.
+DCT - learned Gabor   -2.40 percentage points
+95% CI                [-3.44, -1.28]
+```
+
+Therefore PCA and learned Gabor are **not separated** on this experiment.
+
+> **PCA-16 closes the Gate 6 accuracy gap. A large part of the original learned-vs-frozen result was 'random frozen Gabors are a poor 16-channel basis', not a unique advantage of task-trained receiver geometry.**
+
+DCT-16 is genuinely weaker than the learned Gabor here, but remains an important low-description-cost control and still beats the original random-frozen matched-budget arm.
 
 ## The more interesting axis: description cost of the measurement map
 
@@ -85,15 +92,17 @@ PCA matrix + explicit mean + linear head
   (1024 + 64 + 170) * 4 bytes = 5032 B
 ```
 
+So at essentially tied accuracy the current **total explicit state** difference is about `6.2x`, while the measurement-map coefficients alone differ by `32x`.
+
 This is now the sharper positive observation:
 
 > **A compact geometrically parameterized measurement map can approach the quality of a much more richly described dense projection.**
 
 This is a map-description/storage claim, not yet a scaling law.
 
-## FLOPs: the 6.5x parameter headline does not survive unchanged
+## FLOPs: the parameter advantage and compute advantage scale differently
 
-If the Gabor filters are materialized digitally at inference, both a Gabor map and a dense PCA map still compute 16 dot products over `D` input values.
+If Gabor filters are materialized digitally at inference, both a Gabor map and a dense PCA map still compute 16 dot products over `D` input values.
 
 For `D=64`:
 
@@ -122,9 +131,25 @@ total                              2272 MACs
 
 Ignoring activation-function cost, that is about `1.9x`, not the `~6.5x` suggested by trainable-parameter count.
 
-Therefore Gate 6 should **not** be sold as a 6.5x compute reduction.
+At `D=784`, the common 16-channel projection dominates both systems:
 
-If the measurement is implemented physically or by specialized structured kernels, the compute accounting changes and must be measured rather than inferred from parameter count.
+```text
+projection                          12544 MACs
+compact + linear total              12704 MACs
+fixed + H48 total                   13792 MACs
+ratio                                ~1.09x
+```
+
+So the two resource axes predict **opposite scaling**:
+
+```text
+map-description advantage      grows with D
+naive dense digital MAC gap    shrinks toward 1x with D
+```
+
+This is important. There is no single 'efficiency factor'.
+
+If the structured measurement is implemented physically or by specialized kernels, compute accounting may change and must be measured rather than inferred from parameter count.
 
 ## Egress bytes
 
@@ -151,7 +176,9 @@ dense unstructured map description        O(D)
 
 Thus the storage/description advantage should grow with input dimension.
 
-But **accuracy and compute need not follow the same law**. The next serious scale test must measure all of:
+But **accuracy and compute need not follow the same law**. Gate 10 therefore moves the same 32-scalar / 16-output receiver to 28x28 MNIST and keeps PCA/DCT/frozen-decoder attackers from the start.
+
+The scale experiment must report:
 
 ```text
 accuracy
@@ -162,8 +189,6 @@ wall time
 activation / memory traffic
 egress bytes
 ```
-
-across increasing input dimension and at least one external dataset.
 
 Possible verdicts:
 
