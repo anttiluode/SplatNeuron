@@ -2,93 +2,179 @@
 
 Date: 2026-08-17
 
-## One-line thesis under test
+## One-line thesis still alive
 
-> **Repeated useful computation can shorten its own future observation path by changing persistent receiver geometry.**
+> **Repeated useful computation may shorten its future observation path by changing persistent receiver geometry.**
 
-## What is executable now
+The word **may** is now important. The first two experiments were too favorable to support the stronger version.
 
-```text
-complex Gabor receiver bank
-        |
-        +-- FIXED
-        +-- WAIT at same receiver
-        +-- ROUTE across receiver geometries
-        +-- CONSOLIDATE useful routes into persistent home geometry
-        `-- GROW a persistent branch after repeated useful distant routes
-```
-
-No neural-network training is required for Gates 0/1. That is deliberate: they isolate the mechanism before adding learned routing, private recurrent state, or field write-back.
-
-## Gate 0 receipt
-
-A -> B -> A hidden regime shift.
+## Current scientific state
 
 ```text
-WAIT at B        300 samples, accuracy .486
-ROUTE at B       300 mean work, accuracy 1.000
-CONSOLIDATE B    first5 work 201.2 -> last10 1.0, accuracy 1.000
-return A         first5 work 193.4 -> last10 1.05, accuracy 1.000
+Smoke 0   WAIT / ROUTE / CONSOLIDATE plumbing          works, not a receipt
+Boundary0 WAIT <-> ROUTE nonzero-overlap crossover     implemented; quantitative boundary
+Smoke 1   ROUTE -> GROW                                growth loses to fixed plastic capacity
+Gate 2    budgeted continuous ROUTE                    next real gate
 ```
 
-Interpretation: repeating an observation map that does not carry the label cannot recover it; routing can, and repeated routes can be amortized into persistent receiver geometry.
+## Smoke 0 — demoted
 
-## Gate 1 receipt
-
-A -> B -> A -> B, one dormant branch, no context label.
+The original A/B receiver overlap is approximately machine zero:
 
 ```text
-route-only total work       18060
-single moving anchor         3095
-grow                         1074
-accuracy                     1.000 all three
-grown branches               1.00
-break-even branch cost       2021 observation units
+|Gram[home_A, target_B]| ~= 4e-14
 ```
 
-Once B crystallizes as a second branch, both A and B remain locally available.
+Therefore WAIT's chance performance after 300 repeats was built into the geometry. The script now reports:
 
-## Largest cheats
+```text
+SMOKE0_PASS = ...
+WAIT_VS_ROUTE_EVIDENCE_CLAIM = NOT_TESTED
+```
 
-1. target atoms are exact members of a 300-element receiver bank;
-2. fallback ROUTE may exhaustively scan the full bank;
-3. regimes are stationary blocks rather than drifting worlds;
-4. admission threshold and geometry metric are hand-designed;
-5. consolidation/growth rules are hand-designed, not learned;
-6. logical observation count is not wall-clock/energy;
-7. no strong active-sensing/plasticity baselines yet;
-8. no trained SplatWorld basis yet;
-9. no local private state or write-back yet.
+Keep it only as a mechanism test for ROUTE, receiver consolidation, regime-shift search spikes, and relearning.
 
-## Immediate next gate
+## Boundary 0 — the repaired WAIT/ROUTE question
 
-**Gate 2 — budgeted continuous ROUTE.**
+`experiments/boundary0_wait_route_crossover.py` uses continuous off-grid target geometry and **nonzero** home overlap.
 
-Remove exact-address and exhaustive-search cheats:
+Equal total budget:
+
+```text
+WAIT    8 observations at current receiver
+ROUTE   pay 3 observation units to acquire a better view,
+        then only 5 observations at that view
+```
+
+For Gaussian observation noise, the predicted crossover is
+
+```text
+|c|* = sqrt((8-3)/8) = sqrt(5/8) ~= 0.790569
+```
+
+where `c=<G(home),G(target)>` is the actual rendered complex Gabor overlap.
+
+Near home, WAIT should win because it keeps all eight samples. Farther away, ROUTE should win because the better observation map repays the acquisition tax.
+
+Important limitation: ROUTE is oracle in this boundary instrument. Gate 2 must discover the view without target coordinates.
+
+## Smoke 1 — growth fails the missing fixed-capacity arm
+
+The original comparison made growth look valuable:
+
+```text
+route_only      totalW 18060
+single_anchor   totalW  3095
+grow            totalW  1074
+```
+
+But `single_anchor` was a straw capacity baseline: it cannot hold two views by construction.
+
+The corrected arm starts with **two plastic anchors**, the second at a random bank geometry, and disables growth. Same task, same fallback ROUTE, no oracle B location.
+
+Across 20 seeds (independently reproduced before being committed):
+
+```text
+grow       acc=1.000  totalW=1074.0   B first5=180.80  B last10=2.00
+fixedcap   acc=1.000  totalW= 613.2   B first5= 88.31  B last10=2.00
+```
+
+The fair break-even therefore inverts:
+
+```text
+(613.2 - 1074.0) / 1 ~= -461 observation units
+```
+
+So:
+
+```text
+GROWTH_EARNS_KEEP = False
+```
+
+Do not tune `growth_patience` to rescue it.
+
+## Cross-repo negative
+
+This matches the boundary already recorded in `anttiluode/WildIdea` W3/K2: preallocated alternative charts plus targeted probing matched predictable chart growth. The common lesson is now replicated in two different toy media:
+
+> **Having useful alternative capacity can matter while manufacturing that capacity online earns nothing.**
+
+That makes growth a later question, not the spine of SplatNeuron.
+
+## What survives
+
+The smaller live object is:
+
+```text
+plastic observation geometry
+        +
+active ROUTE
+        +
+use-dependent consolidation / route amortization
+        +
+explicit observation cost
+```
+
+This is still heavily attacked by active attention, deformable sampling, spatial transformers, differentiable plasticity, and simple address caches.
+
+## Gate 2 — budgeted continuous ROUTE
+
+This is now the first experiment allowed to carry architectural weight.
+
+Required properties:
 
 ```text
 continuous off-grid hidden emitter
-receiver can move in (x,y,f,theta)
-strict <= 8 samples / episode
-no access to hidden target geometry
+receiver sampled by actual rendered inner product
+strict <= 8 observations per episode
+no hidden target coordinates
+no exhaustive 300-item scan
+no snapping continuous q back to a bank index
 ```
 
-Compare:
+Required arms from the beginning:
 
 ```text
-random route
-local gradient / finite-difference route
-learned route policy
+random continuous route
+local finite-difference / hill-climb route
+learned active route policy
+fixed-capacity plastic anchors              <- mandatory after Smoke 1
 persistent consolidation
-simple route-cache/table baseline
+simple address/cache baseline
+oracle route ceiling
 ```
 
-Then introduce drift and recurring manifolds.
+The useful question is not merely accuracy. Measure both task performance and observation work as the target drifts or regimes recur.
 
-The kill condition is severe: if a simple context/address cache produces the same amortization without any useful geometry, stop calling this a neuron and keep the cache result.
+## Growth reopening condition
 
-## Later, only if Gate 2 survives
+Growth remains dead until the world contains **more distinct recurring useful views than matched fixed capacity can hold**.
 
-Transplant onto a trained SplatWorld/SplatField packet basis. Then ask whether receiver geometry learned online discovers useful views of a real learned visual medium rather than a synthetic task bank.
+Example future attack:
 
-Only after that add private recurrent state and write-back.
+```text
+K fixed receiver slots
+M recurring useful views, M >> K
+```
+
+Then the question becomes allocation:
+
+```text
+what should be retained?
+what should be replaced?
+when is a new branch worth its cost?
+what should prune?
+```
+
+Only there can growth buy something fixed capacity cannot buy by preallocation.
+
+## Engineering note
+
+Gate 2 is a real rewrite. Gates 0/1 index a precomputed 300x300 Gram matrix and snap interpolated geometry back to a bank address. Gate 2 must evaluate continuous receiver geometry directly against a rendered field or an equivalent exact continuous inner product. Geometry has to do algebraic work, not just order a list search.
+
+## Stop lines
+
+- If a route/address cache matches continuous plastic geometry at lower cost, keep the cache and demote the neuron story.
+- If fixed-capacity plastic receivers match growth whenever capacity is controlled, keep growth dead.
+- If continuous geometry provides no useful directional/generalization structure beyond arbitrary coordinates, Gabors are decoration.
+- Do not add private recurrent state or write-back until ROUTE itself earns something under these attackers.
