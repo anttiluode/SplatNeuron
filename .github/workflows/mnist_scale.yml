@@ -1,12 +1,7 @@
 name: MNIST scale gate
 
 on:
-  push:
-    branches: ["agent/route-grow"]
-    paths:
-      - ".github/workflows/mnist_scale.yml"
-      - "experiments/gate10_mnist_scale_v2.py"
-      - "pyproject.toml"
+  workflow_dispatch:
 
 jobs:
   scale:
