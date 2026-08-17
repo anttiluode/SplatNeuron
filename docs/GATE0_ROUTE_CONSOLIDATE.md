@@ -1,113 +1,80 @@
-# Gate 0 — ROUTE -> CONSOLIDATE
+# Smoke 0 — ROUTE -> CONSOLIDATE
 
 Date: 2026-08-17
 
-Status: **PASS as a controlled synthetic capability test.**
+Status: **construction smoke test, not an evidence receipt.**
 
-## Question
+## Why the status changed
 
-Can repeated use shorten the observation path when the task-relevant distinction is outside the current receiver's support?
+The original run treated the WAIT-vs-ROUTE contrast as evidence that repeating the same observation map cannot restore a missing distinction.
 
-The intended separation is:
+That interpretation was too strong.
+
+For the selected A/B targets the actual rendered Gabor overlap is approximately machine zero:
 
 ```text
-WAIT   = collect more samples through the same observation map
-ROUTE  = change the observation map
+|Gram[home_A, target_B]| ~= 4e-14
 ```
 
-and then:
+So the B label is deliberately absent from the A receiver. Averaging 300 samples at A therefore cannot recover the target signal in expectation. The old criterion
 
 ```text
-successful repeated ROUTE
-        -> persistent receiver movement
-        -> lower future ROUTE work
-```
-
-## Field
-
-The experiment uses 300 actual normalized complex 2-D Gabor atoms:
-
-```text
-5 x positions
-5 y positions
-3 spatial frequencies
-4 orientations
-```
-
-Each receiver's response to an emitter is the complex inner product between the two rendered Gabor templates. The full bank therefore has an explicit complex Gram matrix.
-
-An episode contains one strong task atom with amplitude equal to the label in `{-1,+1}`, ten weak distractor atoms, and complex observation noise. Regime A places the task atom at one extreme of position/frequency/orientation. Regime B places it at the opposite extreme. The receiver starts at A.
-
-## Policies
-
-`FIXED` samples the original A receiver once. `WAIT` samples the exact same A receiver 300 times and averages. `ROUTE` searches the 300 receiver geometries in distance order from the original A home and stops when evidence magnitude crosses the admission threshold. `CONSOLIDATE` searches as above, but when a routed observation crosses the evidence threshold, persistent home geometry moves 28% toward that destination.
-
-No gradient training changes receiver geometry during the experiment.
-
-## Gate criteria
-
-The implementation fails unless all of these hold:
-
-```text
-fixed off-support accuracy <= .65
 WAIT off-support accuracy <= .65
-ROUTE off-support accuracy >= .95
-CONSOLIDATE off-support accuracy >= .95
-regime shift causes >=5x search spike
-late shifted work <=35% of early shifted work
-late CONSOLIDATE work <=35% of ROUTE-only work
-return to old regime spikes again
-return regime is relearned
 ```
 
-## Result
+was effectively guaranteed by construction rather than exposed to falsification.
 
-20 deterministic seeds, 50 episodes per block:
+The script now prints that overlap and labels itself `SMOKE0_PASS`; it explicitly reports:
 
 ```text
-policy         block     acc     meanW   first5W   last10W
-----------------------------------------------------------
-fixed          A1     1.000      1.00      1.00      1.00
-fixed          B      0.463      1.00      1.00      1.00
-fixed          A2     1.000      1.00      1.00      1.00
-wait           A1     1.000    300.00    300.00    300.00
-wait           B      0.486    300.00    300.00    300.00
-wait           A2     1.000    300.00    300.00    300.00
-route          A1     1.000      1.00      1.00      1.00
-route          B      1.000    300.00    300.00    300.00
-route          A2     1.000      1.00      1.00      1.00
-consolidate    A1     1.000      1.00      1.00      1.00
-consolidate    B      1.000     21.28    201.20      1.00
-consolidate    A2     1.000     20.46    193.42      1.05
+WAIT_VS_ROUTE_EVIDENCE_CLAIM = NOT_TESTED
 ```
 
-All criteria passed.
+## What the smoke test still checks
 
-## Supported statement
-
-> In this controlled Gabor-bank world, replication through a receiver whose support does not carry the label stays at chance even with 300 samples; changing receiver geometry recovers the distinction, and a simple persistent use-dependent geometry update amortizes repeated search while preserving classification accuracy.
-
-## What this does not support
-
-Do not claim that WAIT is generally useless; receiver movement is novel; this is a competitive active-vision algorithm; exhaustive routing scales; the Gabor bank is learned; the consolidation rule is a biological Hebbian rule; logical receiver samples predict wall-clock or energy cost; or the result survives off-grid targets or drifting worlds.
-
-The test is intentionally favorable: both hidden targets are exact members of the bank and the router may scan every receiver.
-
-## Why keep it
-
-The receipt isolates one useful distinction before private state, recurrent write-back, or learned routing can muddy it:
+The experiment remains useful as plumbing:
 
 ```text
-more evidence through C
-!=
-changing C
+A -> B -> A
 ```
 
-and demonstrates the proposed amortization shape:
+with a 300-element complex Gabor receiver bank.
+
+It verifies that:
+
+- ROUTE can change receiver address and find the constructed target;
+- a persistent receiver anchor can consolidate toward a repeatedly useful route;
+- a hidden regime change causes search work to spike;
+- repeated use reduces that search work again;
+- returning to the old regime produces another spike and relearning.
+
+Representative original numbers across 20 deterministic seeds:
 
 ```text
-stable relationship  -> cheap observation
-hidden shift         -> search spike
-repeated use         -> geometry adapts
-new stable relation  -> cheap observation again
+WAIT at B        accuracy .486, work 300
+ROUTE at B       accuracy 1.000, work 300
+CONSOLIDATE B    first5 work 201.2 -> last10 1.0
+return A         first5 work 193.4 -> last10 1.05
 ```
+
+Those numbers demonstrate that the mechanism executes. They do **not** establish a general WAIT/ROUTE advantage.
+
+## Replacement experiment
+
+The real WAIT-vs-ROUTE question is now moved to:
+
+```text
+experiments/boundary0_wait_route_crossover.py
+```
+
+There the home receiver has **nonzero** overlap with every target. WAIT genuinely improves SNR as `sqrt(n)`, while ROUTE pays an explicit acquisition tax before observing from a better geometry.
+
+That produces a measurable crossover rather than a constructed null.
+
+## Scientific boundary
+
+Keep this file in the history because it records a useful correction:
+
+> A correct qualitative statement can still be a weak experiment if the benchmark geometry makes the answer true by identity.
+
+The current research claim must therefore be earned by the nonzero-overlap boundary and, later, by a router that has to discover a useful continuous view under a strict budget.
