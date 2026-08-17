@@ -1,0 +1,22 @@
+name: Gate 11b MNIST map rate
+
+on:
+  push:
+    branches: ["agent/route-grow"]
+    paths:
+      - ".github/workflows/gate11b_mnist_rate.yml"
+      - "experiments/gate11b_mnist_map_rate.py"
+      - "docs/GATE11B_PREREG_MNIST_RATE.md"
+
+jobs:
+  rate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+      - run: python -m pip install -e . scikit-learn
+      - run: python experiments/gate11b_mnist_map_rate.py --download
