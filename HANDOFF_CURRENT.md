@@ -4,31 +4,28 @@ Date: 2026-08-17
 
 ## One-line state
 
-> **The online-plasticity story mostly died. The strongest surviving result is a receiver-vs-decoder parameter-efficiency frontier: learning a narrow observation map can compile substantial downstream nonlinear computation into the front end.**
+> **The biology-shaped online-plasticity ideas mostly died. The live question is now a resource-allocation frontier: how much description, compute, and communication does a useful observation map require?**
 
 No novelty, neuroscience, or hardware claim is currently supported.
 
 ## Ledger
 
 ```text
-Smoke 0    WAIT/ROUTE/CONSOLIDATE plumbing          original WAIT null constructed
-Boundary0  WAIT <-> oracle ROUTE                     analytic nonzero-overlap crossover
-Smoke 1    online branch growth                     fixed plastic capacity wins
-Gate 2     continuous fixed-capacity ROUTE          address cache survives
-Boundary1  cache <-> ROUTE vs drift                 sign/value region measured
-Gate 3     hazard / PROBE admission                  best fixed threshold survives
-Gate 4     within-run self-tuning admission          robust fixed threshold survives
-Gate 5     Gabor vs matched generic manifold        generic RBF reproduces phase
-Gate 6     learned receiver vs decoder              positive efficiency result
-Gate 7     matched ~200 param mixed allocation      no interior optimum
-Gate 8     private branch + local collapse frontier no interior Y block
+Smoke 0    WAIT/ROUTE plumbing                     original WAIT null constructed
+Smoke 1    online branch growth                    fixed plastic capacity wins
+Gate 2     continuous fixed-capacity ROUTE         address cache survives
+Gate 3/4   adaptive admission                      strong fixed policies survive
+Gate 5     Gabor-specific ROUTE                    generic RBF reproduces phase
+Gate 6     learned vs random-frozen receiver       large parameter-count gap
+Gate 7/8   mixed/pre-collapse allocation           no interior Y block
+Gate 9     PCA/DCT fixed-basis attack              PCA closes Gate-6 accuracy gap
 ```
 
 ## Closed branches
 
 ### Growth
 
-Two preallocated plastic anchors beat online branch growth in the A/B recurring-view toy:
+Two preallocated plastic anchors beat online branch growth in the recurring A/B toy:
 
 ```text
 grow       total work 1074.0
@@ -41,59 +38,29 @@ Same final accuracy and steady state. Fair branch value is negative.
 GROWTH_EARNS_KEEP = False
 ```
 
-This independently mirrors the `WildIdea` W3/K2 negative. Do not reopen growth unless recurring useful views greatly exceed fixed capacity and fixed-capacity replacement/cache policies are present from the start.
+Do not reopen growth unless recurring useful views greatly exceed fixed capacity and fixed-capacity replacement/cache policies are present from the start.
 
 ### Adaptive admission
 
-Gate 3:
-
-```text
-fixed threshold .45    mean late overlap .595
-hazard adaptive        .553
-PROBE band             .583
-```
-
-Gate 4 then gave online adaptation its last fair excuse: the drift/noise regime changed **within the same run**, with no regime label. A robust fixed threshold `.55` and a one-scalar self-tuner were frozen on a separate validation sequence.
-
-Fresh confirmation:
-
-```text
-fixed .55       mean overlap .5640
-self-tune       mean overlap .5292
-delta          -0.0348
-95% CI         [-0.1573,+0.0842]
-```
+Gate 3 and Gate 4 both failed to beat robust fixed admission policies, including a within-run nonstationary sequence.
 
 ```text
 ADMISSION_BRANCH_STATUS = CLOSED
 ```
 
-Do not add a neural conductor or more hazard/PROBE knobs to this synthetic family.
+Do not add a neural conductor or more hazard/PROBE knobs to the same synthetic family.
 
-### Gabor-specific ROUTE story
+### Gabor-specific online ROUTE
 
-A generic diagonal RBF manifold was fitted to local Gabor overlap lengths and given the exact same fixed-capacity router/budget.
-
-Fresh five-point drift sweep:
+A generic smooth RBF observation manifold reproduced the cache<->ROUTE sign change across all five drift scales.
 
 ```text
-drift     Gabor ROUTE-cache     RBF ROUTE-cache
-0.0            -0.031               -0.026
-0.5            -0.049               -0.021
-1.0            +0.038               +0.184
-2.0            +0.227               +0.301
-4.0            +0.151               +0.044
-```
-
-```text
-sign match                    5 / 5
-benefit-profile correlation   .759
 GABOR_SPECIFIC_CLAIM_EARNS_KEEP = False
 ```
 
-So the early cache↔ROUTE phase is a generic smooth-observation-manifold result, not evidence for splats.
+Frequency/splat geometry is not the demonstrated cause of the online routing phase.
 
-## Gate 6 — result that earned keep
+## Gate 6 — useful result, now narrowed
 
 Task: `sklearn` handwritten-digit classification.
 
@@ -111,149 +78,232 @@ Receiver geometry = `32` trainable scalars. Linear ten-class head = `170`.
 learned receiver + linear = 202 trainable parameters
 ```
 
-The key attacker begins from the **same initial Gabor receiver geometry**, freezes it, and moves comparable trainable budget downstream.
-
-Eight deterministic stratified splits:
+Original matched-budget attacker:
 
 ```text
-learned receiver + linear          202 params   95.24%
-fixed receiver + H=7 MLP           199 params   89.76%
+same random initial Gabor geometry, frozen
++ H=7 downstream MLP
+= 199 trainable params
 ```
 
-Paired gain:
+Eight splits:
 
 ```text
-+5.49 percentage points
-95% bootstrap CI [+3.40,+7.15]
+learned receiver + linear          202 p   95.24%
+random-frozen Gabor + H7 MLP       199 p   89.76%
 ```
 
-Same-family controls on four splits:
+Increasing only downstream decoder capacity behind the same frozen 16 values gave:
 
 ```text
-learned point geometry + linear        92.64%
-fixed same point geometry + MLP        85.35%
-
-learned Gaussian-pair geometry         90.83%
-fixed same Gaussian-pair + MLP         84.10%
+H=7      199 p    89.76%
+H=24     658 p    92.85%
+H=32     874 p    93.61%
+H=40    1090 p    93.99%
+H=48    1306 p    94.31%
 ```
 
-So the broad effect is **not uniquely Gabor**.
+So a large decoder could recover the information. The strong information-ceiling claim was already false.
 
-### Load-bearing information attack
+## Gate 9 — missing strong fixed basis changes the center again
 
-Keep the 16 Gabor measurements fixed and increase only decoder capacity:
+Gate 6's fixed receiver was **random**. That was a weak representation baseline.
+
+Gate 9 adds:
 
 ```text
-H=7      199 params    89.76%
-H=24     658 params    92.85%
-H=32     874 params    93.61%
-H=40    1090 params    93.99%
-H=48    1306 params    94.31%
+PCA-16   unsupervised training-set subspace
+DCT-16   fixed data-free low-frequency basis
 ```
 
-Learned receiver remains:
+Both emit the same 16 real values and use the same 170-parameter linear head.
+
+Independent deterministic reproduction on split IDs `6000..6007`:
 
 ```text
-202 params             95.24%
+PCA-16 + linear      95.42%
+DCT-16 + linear      92.85%
 ```
 
-Paired learned-minus-fixed:
+Compare Gate 6 reported learned Gabor mean:
 
 ```text
-H7     +5.49   CI [+3.40,+7.15]
-H24    +2.40   CI [+1.11,+3.68]
-H32    +1.63   CI [+0.49,+2.71]
-H40    +1.25   CI [+0.31,+2.19]
-H48    +0.94   CI [-0.07,+1.94]
+learned Gabor        95.24%
 ```
 
-An RBF-SVM on the same fixed features also reached about `95%` on the first four splits.
+Therefore:
 
-Therefore **fixed observation did not destroy the information**. A sufficiently powerful downstream function recovers it.
+> **PCA essentially closes the Gate-6 accuracy gap. The original +5.49-point story was substantially 'random frozen Gabors are a bad 16-channel basis'.**
 
-Supported interpretation:
+Do not center the repo on 'learning what to observe beats fixed sensing'.
 
-> **Task-aligned receiver learning makes the downstream decision surface much cheaper. It compiles computation into the observation map.**
+## What actually survives: compact measurement-map description
 
-This is the current strongest SplatNeuron result.
+Let input dimension be `D`; output width remains `M=16`.
 
-## Gate 7 — tiny-budget interior does not win
-
-Near 200 total parameters:
+Dense linear measurement map:
 
 ```text
-fixed receivers + H7 decoder          199 p   ~89.9%
-7/8 learned receivers + H6 decoder    200 p   ~93.1%
-8/8 learned receivers + linear        202 p   ~95.5%
+16 * D coefficients
 ```
 
-The interior allocation beats the downstream-heavy endpoint but not the all-receiver endpoint.
-
-No Y block yet.
-
-## Gate 8 — true pre-collapse branch frontier
-
-Carrier remains fixed at **16 real channels**, but private receiver branches may exceed transmitted width.
+Eight complex Gabor receivers:
 
 ```text
-private Gabor branches
-        -> learned local linear collapse to 16
-        -> downstream decoder
+8 * 4 geometry scalars = 32
 ```
 
-Comparable ~750-param allocations:
+Description ratio:
 
 ```text
-configuration             params   six-split mean
--------------------------------------------------
-B8 direct / H27             771        96.11%
-B10 collapse / H14          764        94.95%
-B12 collapse / H11          755        94.63%
-B14 collapse / H8           746        93.84%
-B16 collapse / linear       762        95.46%
+(16D)/32 = D/2
 ```
 
-The two hard endpoints are close; every interior allocation is lower.
+Examples:
+
+```text
+D=64    ->   1024 dense coefficients / 32 geometry = 32x
+D=784   ->  12544 dense coefficients / 32 geometry = 392x
+```
+
+PCA also needs a `D`-value centering mean if stored explicitly.
+
+At FP32 on the 8x8 task:
+
+```text
+Gabor geometry + linear head           808 B
+PCA matrix + mean + linear head       5032 B
+```
+
+The candidate statement is now:
+
+> **A short structured description of an observation map can approach the task quality of a much more richly described dense projection.**
+
+This is not yet a scaling law.
+
+## FLOP / egress correction
+
+The old ~6.5x trainable-parameter headline does not imply ~6.5x compute.
+
+If the filters are digitally materialized, all 16-channel linear measurements pay roughly:
+
+```text
+16 * D projection MACs
+```
+
+For `D=64`:
+
+```text
+learned Gabor + linear             1024 + 160 = 1184 MACs
+fixed Gabor + H48 decoder          1024 + 768 + 480 = 2272 MACs
+```
+
+So the simple inference-MAC advantage is about `1.9x`, ignoring nonlinear/generation costs.
+
+All Gate-6/9 arms also cross the receiver boundary with exactly:
+
+```text
+16 FP32 values = 64 bytes/sample
+```
+
+so Gate 6 contains no egress-bandwidth advantage.
+
+## SpectralNeuron relation
+
+`anttiluode/SpectralNeuron` is the rung below this one on the same observation-operator ladder.
+
+Its bucket collapses a shared waveform to total power; its resonant forks preserve selective frequency channels. Three channels on one noisy wire achieved roughly:
+
+```text
+fork self/crosstalk ratio     3.1x
+bucket ratio                  1.0x
+```
+
+with finite off-diagonal leakage up to about `.34`.
+
+That experiment measures something Gate 6 fixed by fiat: **logical channels sharing a physical medium interfere**.
+
+The combined abstraction is not 'frequency computation'. It is:
+
+```text
+selectivity
+    +
+measurement-map description cost
+    +
+shared-medium / egress interference
+    +
+downstream decoder cost
+```
+
+See `docs/SPECTRALNEURON_RELATION.md`.
+
+## Gate 8 remains a null
+
+At fixed 16-wide carrier and roughly ~750 trainable parameters, increasing private Gabor branches and locally collapsing them did not produce an interior winner:
+
+```text
+B8 direct / H27            96.11%
+B10 collapse / H14         94.95%
+B12 collapse / H11         94.63%
+B14 collapse / H8          93.84%
+B16 collapse / linear      95.46%
+```
 
 ```text
 INTERIOR_Y_BLOCK_EARNS_KEEP = False
 ```
 
-Do not tune a fancier reducer until one wins. A new local reducer must have an independent motivation and keep both hard endpoints in the comparison.
+Do not architecture-search a reducer toward a win.
 
-## Prior art boundary
+## Current decisive question: does the exchange rate scale?
 
-Gate 6 is not a novelty claim. Learnable Gabor filters, learned measurement matrices, differentiable sensor layouts, and joint sensor/camera + perception optimization already occupy the broad principle of task-driven sensing.
-
-See `docs/PRIOR_ART.md`.
-
-## Current research question
-
-SplatNeuron is no longer primarily an online-plasticity project.
-
-The live question is:
-
-> **At fixed communication width and controlled total resources, where should computation live: task-aligned receiver/feature generation, local pre-collapse reduction, or the downstream decoder?**
-
-Current answer on this tiny digit task:
+The structured-map hypothesis predicts:
 
 ```text
-small budget     -> receiver learning is extremely efficient
-larger budget    -> a big decoder can recover fixed-observer information
-private branches -> dense local collapse gives no interior win
+structured description       O(1) per receiver
+dense map description        O(D) per output channel
 ```
 
-## Legitimate next moves
+The ratio therefore grows automatically with input dimension. What is **not** automatic is whether useful accuracy/compute efficiency grows with it.
 
-1. **Generalize Gate 6 to another dataset / modality** before treating the 6.5x-ish parameter frontier as more than a small-data receipt.
-2. Measure FLOPs, wall time, memory movement and not just trainable parameter count.
-3. Test independently motivated sparse/local reducers against both Gate 8 endpoints; do not architecture-search toward a win.
-4. If returning to a brain model, use Gate 6 only as the modest computational analogy: learning can reshape a representation so that downstream readout becomes simpler. Do not claim that neurons literally implement these Gabor receivers.
+Next serious experiment must change `D` / dataset while keeping:
+
+```text
+16 transmitted values
+8 compact receiver objects
+same geometry parameter count
+strong PCA/DCT fixed bases
+matched fixed structured receiver + decoder frontier
+```
+
+Measure:
+
+```text
+accuracy
+map-description bytes
+materialized model bytes
+MACs/FLOPs
+wall time
+memory traffic
+egress bytes
+```
+
+Verdicts:
+
+```text
+accuracy exchange rate decays -> note / compression curiosity
+holds while description ratio grows -> useful edge/embedded rule
+grows with D -> candidate allocation law
+```
 
 ## Stop lines
 
-- Admission branch is closed.
-- Growth branch is closed for capacity-matched two-view worlds.
-- Gabor-specific ROUTE story is closed.
-- No interior pre-collapse Y block has been found.
-- Do not call Gate 6 novel without a much stronger prior-art comparison and external-task replication.
+- Admission branch closed.
+- Growth branch closed for capacity-matched two-view worlds.
+- Gabor-specific online routing claim closed.
+- No interior pre-collapse Y block found.
+- Gate 6 no longer establishes learned sensing vs a good fixed basis; PCA closes that gap.
+- Do not quote the 6.5x parameter ratio as a FLOP ratio.
+- Do not call 16-channel width an egress win; every Gate-6/9 arm emits the same 64 FP32 bytes.
+- Do not claim frequency is the general mechanism; SpectralNeuron demonstrates selectivity/FDM, not unique frequency computation.
+- The next claim must survive scale and strong fixed-basis controls.
