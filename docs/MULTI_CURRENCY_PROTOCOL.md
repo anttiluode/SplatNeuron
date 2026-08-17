@@ -27,7 +27,7 @@ For each system report, at minimum:
 R_task      held-out task error / accuracy
 L_map       learned operator-description payload (bits/bytes)
 S_map       materialized operator storage if expanded
-Q_map       observation/projection compute or physical work
+Q_map       observation/projection compute or physical work at inference
 M_logic     logical consequence width
 B_egress    data bytes crossing the logical boundary per sample
 P_phys      physical carrier count / bandwidth where applicable
@@ -36,8 +36,16 @@ S_rx        receiver/demultiplexer state
 Q_rx        receiver/demultiplexer compute
 S_decode    task-decoder state
 Q_decode    task-decoder compute
-latency     measured wall time
+latency     measured inference wall time
+Q_train     training/search compute used to discover/fix the system
+T_train     training/search wall time
 ```
+
+If energy is actually measured, report training and inference energy separately rather than inferring them from FLOPs.
+
+A short deployment description can be expensive to discover. PCA, an analytic DCT, a learned local geometry and a NAS-searched structured operator can therefore occupy very different **training-cost** points even if their deployed map bytes are similar.
+
+Do not call a result `more efficient` without saying whether training/search cost is included.
 
 ## `L_map` is schema-conditional, not a standalone file size
 
