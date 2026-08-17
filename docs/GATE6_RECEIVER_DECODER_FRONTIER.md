@@ -2,9 +2,11 @@
 
 Date: 2026-08-17
 
-Status: **positive parameter-efficiency result; information-ceiling claim rejected.**
+Status: **useful receiver-vs-decoder experiment, but its original interpretation is superseded by Gate 9.**
 
-## Question
+> **Important correction:** Gate 6's fixed structured receiver started from random Gabor geometry. Gate 9 adds strong fixed PCA/DCT bases. PCA-16 essentially closes the learned-Gabor accuracy gap. Therefore Gate 6 does **not** establish that task-trained observation geometry beats a good fixed 16-channel basis. Read [`GATE9_MEASUREMENT_MAP_CONTROLS.md`](GATE9_MEASUREMENT_MAP_CONTROLS.md) before quoting this gate.
+
+## Question originally tested
 
 The routing work progressively killed three stronger stories:
 
@@ -12,11 +14,11 @@ The routing work progressively killed three stronger stories:
 - adaptive admission did not beat strong fixed policies;
 - the cache↔ROUTE phase was reproduced by a generic smooth manifold, so it was not Gabor-specific.
 
-That leaves a different part of the original idea:
+Gate 6 then asked:
 
-> **Can learning the observation map make a downstream computation simpler?**
+> **Can moving a small trainable budget into the observation map make the downstream classifier much simpler than leaving a randomly initialized structured map frozen?**
 
-Gate 6 tests this directly on `sklearn` handwritten digits.
+That narrower question still has a clear positive answer.
 
 ## Fixed communication width
 
@@ -42,9 +44,9 @@ A linear ten-class decoder has `16 x 10 + 10 = 170` parameters, giving:
 learned receiver + linear head = 202 trainable parameters
 ```
 
-## Matched downstream-state attacker
+## Original matched downstream-state attacker
 
-For each split the fixed-Gabor models start from **the exact same initial receiver geometry** as the learned-Gabor model, but receiver coordinates are frozen.
+For each split the fixed-Gabor models start from **the exact same random initial receiver geometry** as the learned-Gabor model, but receiver coordinates are frozen.
 
 The matched-budget attacker spends its trainable parameters downstream:
 
@@ -54,61 +56,43 @@ The matched-budget attacker spends its trainable parameters downstream:
 
 At hidden width `H=7` it has `199` trainable parameters, essentially identical to the learned-receiver model's `202`.
 
-## First deterministic replication
+## Deterministic result
 
-Four fresh stratified splits (`6000..6003`), deterministic model/optimizer initialization:
-
-```text
-model                                      params   mean test accuracy
----------------------------------------------------------------------
-learned Gabor receivers + linear              202        94.51%
-fixed same Gabor receivers + H=7 MLP           199        88.82%
-learned 16 point receivers + linear            202        92.64%
-learned Gaussian-pair receivers + linear       202        90.83%
-fixed random dense projection + H=7 MLP        199        85.21%
-full 64 pixels + linear                        650        96.53%
-```
-
-Paired learned-Gabor contrasts over those four splits:
+Eight stratified splits (`6000..6007`):
 
 ```text
-vs fixed same Gabor + matched MLP      +5.69 points  95% bootstrap CI [+4.44,+7.22]
-vs learned point receivers             +1.87 points  CI includes zero
-vs learned Gaussian-pair receivers     +3.68 points  CI positive
-vs fixed random projection + MLP       +9.31 points  CI positive
+learned Gabor receivers + linear       202 params    95.24%
+fixed same random Gabor + H=7 MLP      199 params    89.76%
 ```
 
-The Gabor-vs-learned-point contrast is **not separated**, so this does not resurrect a Gabor-specific claim.
+Paired learned-minus-fixed:
+
+```text
++5.49 percentage points
+95% bootstrap CI [+3.40,+7.15]
+```
+
+This says **learning substantially repairs a poor random structured observation map more efficiently than a tiny matched-budget decoder does**.
+
+It does not say the learned map is uniquely good.
 
 ## Same-family geometry controls
 
-To make sure the result was not merely an unfair Gabor-vs-other-family comparison, the generic observer families were also attacked with their own exact initial geometry frozen and the matched `H=7` MLP placed downstream.
-
-Four splits:
+On the first four splits:
 
 ```text
 learned point geometry + linear       92.64%
 fixed same point geometry + MLP       85.35%
-delta                                 +7.29 points  CI [+4.44,+10.14]
 
 learned Gaussian-pair geometry        90.83%
 fixed same Gaussian-pair + MLP        84.10%
-delta                                 +6.74 points  CI [+3.75,+10.76]
 ```
 
-So the broad effect occurs in more than one receiver family:
+So the random-frozen-versus-learned effect occurs in several receiver families and is not uniquely Gabor.
 
-> moving trainable budget into **what is observed** can outperform spending the same budget on a nonlinear decoder behind a fixed observation map.
+## Fixed observation did not destroy the information
 
-## Does fixed observation destroy information?
-
-This was the load-bearing attacker.
-
-If a fixed receiver truly destroyed the class distinction, no downstream decoder should recover the learned-receiver score.
-
-It did recover it.
-
-With the same fixed 16 Gabor measurements, increase only hidden decoder width:
+Keep the same frozen 16 random-Gabor measurements and increase only decoder capacity:
 
 ```text
 hidden H   trainable params   mean accuracy over 8 splits
@@ -120,7 +104,7 @@ hidden H   trainable params   mean accuracy over 8 splits
 48             1306                    94.31%
 ```
 
-The learned-receiver model over the same eight splits:
+The learned-receiver model remains:
 
 ```text
 202 params      95.24%
@@ -136,60 +120,91 @@ fixed H=40  (1090 params)    +1.25 points   CI [+0.31,+2.19]
 fixed H=48  (1306 params)    +0.94 points   CI [-0.07,+1.94]
 ```
 
-A validation-selected RBF-SVM on the fixed 16 Gabor features reached about `95.0%` on the first four splits.
+A validation-selected RBF-SVM on the same frozen features also reached about `95%` on the first four splits.
 
-Therefore the strong information-ceiling claim is false:
+Therefore the strong information-ceiling claim was false:
 
-> **The fixed receiver still contains enough information. The learned receiver makes the required downstream map much cheaper.**
+> **The frozen receiver still contains enough information; it simply presents it to a small decoder in an awkward coordinate system.**
 
-## Supported statement
+## Gate 9 fixed-basis attack
 
-The current positive SplatNeuron result is:
+Gate 6 omitted the load-bearing representation baseline: a **good fixed 16-channel basis**.
 
-> **At fixed 16-channel communication width on handwritten-digit classification, jointly learning a low-parameter observation geometry can compile substantial downstream nonlinear computation into the receiver. In this experiment, a 202-parameter learned-observer/linear-decoder model reached the performance region that a fixed observation map required roughly a 1.3k-parameter nonlinear decoder to match.**
-
-This is a **parameter-efficiency / computation-placement** result, not a novelty claim.
-
-## Relation to the original idea
-
-The phrase “learning creates an observable distinction” was too strong here. The distinction was already recoverable from fixed observations by a powerful enough decoder.
-
-A better description is:
+Gate 9's independent deterministic run on the same split IDs gives approximately:
 
 ```text
-fixed receiver
-    -> awkward representation
-    -> expensive downstream decision surface
-
-learned receiver
-    -> task-aligned representation
-    -> cheap linear decision surface
+PCA-16 + linear      95.42%
+DCT-16 + linear      92.85%
+learned Gabor        95.24%   (this gate's reported mean)
 ```
 
-In that sense, learning the receiver **compiles part of the computation into observation geometry**.
+PCA therefore essentially closes the accuracy gap.
+
+The repo should no longer summarize Gate 6 as:
+
+> task-aligned receiver learning makes the downstream map uniquely cheap.
+
+The defensible summary is:
+
+> **A compact trainable structured map can repair a bad low-width representation with very few trainable scalars, but a strong unsupervised fixed subspace can already be just as good on this task.**
+
+That redirects the interesting question from *learned versus fixed* toward **measurement-map description cost**.
+
+## Parameter count is not compute
+
+The earlier `202` versus `~1306` parameter comparison should not be read as `~6.5x` inference compute.
+
+For a generic digital implementation at `D=64`, both systems first pay `16*64 = 1024` projection MACs.
+
+Approximate totals:
+
+```text
+learned Gabor + linear      1024 + 160             = 1184 MACs
+fixed Gabor + H48           1024 + 16*48 + 48*10  = 2272 MACs
+```
+
+So the simple MAC ratio is about `1.9x`, not `6.5x`.
+
+All constrained arms also emit the same 16 FP32 measurements = `64 bytes/sample`, so Gate 6 contains no egress-width advantage.
+
+## What remains useful about Gate 6
+
+Gate 6 still supplies a controlled **receiver-vs-decoder allocation curve** behind a deliberately narrow communication boundary. It showed:
+
+```text
+poor observation coordinates + tiny decoder   -> bad
+same poor coordinates + large decoder         -> recoverable
+compact trainable observation map + tiny head  -> good
+```
+
+Gate 9 adds:
+
+```text
+good fixed dense subspace + tiny head          -> also good
+```
+
+Together the live question is:
+
+> **How much map description/storage and downstream compute are needed to produce a useful low-width consequence?**
 
 ## Important limitations
 
-- `sklearn` digits is a small, low-resolution dataset.
-- Four splits were used for the broad family controls; eight for the main receiver-decoder frontier.
-- The learned receivers adapt during training, not within lifetime/inference.
-- Gabor-specific superiority is not established; learned point receivers are a strong attacker.
-- Parameter count is not FLOPs, wall time, memory traffic, or energy.
-- A full 64-pixel linear model remains a stronger accuracy ceiling at larger communication width.
-- This is closely related to ordinary feature learning / learned front ends; no claim of a new ML principle is made yet.
+- `sklearn` digits is small and 8x8.
+- PCA-16 is now a stronger accuracy baseline than the random-frozen receiver family.
+- Gabor-specific superiority is not established.
+- trainable parameter count does not measure MACs, memory traffic, wall time, energy, or physical sensing cost.
+- all current 16-channel arms fix egress width by construction.
+- task-driven/learnable front ends and sensor co-design are established prior art.
 
-## Next gate
+## Next test
 
-The next useful test is a **pre-collapse receiver frontier** rather than another neuron metaphor:
+The compact-parameterization argument predicts a scaling law in **map description cost**:
 
 ```text
-fixed transmitted width
-fixed or carefully accounted total compute/parameters
-trade budget between:
-    receiver / local feature generation
-    downstream reducer / decoder
+structured map description      O(1) per receiver
+dense linear map                O(D) per output channel
 ```
 
-Then ask whether an interior allocation beats both hard endpoints across more than this one small dataset.
+At fixed 16-channel output, the dense/Gabor description ratio is `D/2`: `32x` at 8x8 and `392x` at 28x28.
 
-That is the point where the SplatNeuron result can connect back to the broader receiver-relative / Y-block work without pretending the current digits experiment already proves it.
+The next external-scale experiment must ask whether useful accuracy/compute efficiency holds or grows as that description ratio grows.
