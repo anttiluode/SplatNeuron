@@ -1,88 +1,121 @@
-# Gate 1 — ROUTE -> GROW
+# Smoke 1 — ROUTE -> GROW
 
 Date: 2026-08-17
 
-Status: **PASS as a controlled recurring-regime capability test.**
+Status: **growth claim fails against fixed plastic capacity.**
 
-## Question
+## Original question
 
-Does persistent branch growth buy anything beyond one receiver whose home geometry can move?
+The first version asked whether a second receiver branch grown after repeated useful distant routes could preserve two recurring views more cheaply than one moving receiver.
 
-Gate 0's single anchor can learn the current regime but forgets the old one. Gate 1 makes the structural prediction sharper:
-
-> If a useful distant route recurs, preserving it as another receiver branch should convert repeated global search into a small local branch check, and the old route should remain available when the world returns.
-
-## Regime sequence
+Sequence:
 
 ```text
 A -> B -> A -> B
 ```
 
-30 episodes per block. There is **no context/regime label** supplied to the receiver.
-
-## Policies
-
-`ROUTE ONLY` always searches from the original A home. `SINGLE ANCHOR` uses Gate 0 consolidation: successful routes continuously move one home receiver. `GROW` starts with one A branch and one dormant branch slot. At each episode it samples existing branches directly; if one crosses the evidence threshold it uses it, otherwise it pays for global ROUTE. If three similar successful routed destinations lie far from every existing branch, it crystallizes one new branch there.
-
-The branch rule receives no hidden regime identifier.
-
-## Result
-
-20 deterministic seeds:
+The initial comparison was:
 
 ```text
-route_only     acc=1.000  totalW=18060.0  growths=0.00
-single_anchor  acc=1.000  totalW= 3095.0  growths=0.00
-grow           acc=1.000  totalW= 1074.0  growths=1.00
+route_only     acc=1.000  totalW=18060
+single_anchor  acc=1.000  totalW= 3095
+grow           acc=1.000  totalW= 1074
 ```
 
-GROW block behavior:
+Against the single-anchor arm, growth appeared to have a positive break-even value:
 
 ```text
-block A1   meanW  1.00   first5 1.00    last10 1.00
-block B    meanW 31.80   first5 180.80  last10 2.00
-block A2   meanW  1.00   first5 1.00    last10 1.00
-block B2   meanW  2.00   first5 2.00    last10 2.00
+(3095 - 1074) / 1 = +2021 observation units
 ```
 
-So after structural growth, the system retained both useful observation locations. Returning to A no longer caused the search spike seen in the single-anchor policy, and returning to B likewise remained local.
+That baseline was insufficient. One moving anchor cannot retain two views by construction.
 
-## Charged morphology
+## Missing attacker: fixed capacity with plasticity
 
-A new branch is not free.
+The corrected experiment adds **two receiver anchors from the start**, with growth disabled.
 
-Rather than choose a branch cost and tune toward a win, the experiment computes the branch cost at which GROW would stop beating SINGLE ANCHOR over the tested horizon:
+The second anchor is initialized to a random bank geometry; it receives no oracle knowledge of B. Both anchors are plastic. Existing anchors are checked first, and if neither admits the current episode the arm pays the same exhaustive fallback ROUTE used by GROW. The nearest existing anchor then consolidates toward the successful routed destination.
+
+Nothing else about the synthetic world changes.
+
+Across 20 deterministic seeds, the independently reproduced result is:
 
 ```text
-(single-anchor observation work - grow observation work)
---------------------------------------------------------
-                    number of grown branches
-
-= (3095 - 1074) / 1
-= 2021 observation units
+policy      accuracy   total work   B first5   B last10   second-B first5
+----------------------------------------------------------------------------
+grow          1.000      1074.0       180.80      2.00          2.00
+fixedcap      1.000       613.2        88.31      2.00          2.00
 ```
 
-So this particular recurring workload has positive structural value for any branch cost below about 2021 units in the same logical accounting.
+Steady-state behavior is the same. Fixed capacity gets there more cheaply.
 
-That is not a hardware cost estimate. It is a break-even boundary for the synthetic experiment.
+The growth patience of three is pure transient tax in this two-view world: the growing arm pays repeated global search before crystallizing capacity that the fixed-capacity arm already possesses and can move on the first successful route.
 
-## Supported statement
+## Break-even inversion
 
-> In a recurring two-regime Gabor observation world with no explicit context label, a hand-designed use-dependent branch-growth rule can preserve two previously expensive receiver routes and substantially reduce future observation/search work at unchanged task accuracy; the experiment exposes the break-even cost of the extra branch rather than treating morphology as free.
-
-## What this does not support
-
-Do not claim that biological dendrites implement this rule; the growth policy is learned; branch checks stay cheap at large branch counts; exhaustive fallback routing is scalable; useful views are discovered in a continuous space; the result beats active attention, spatial transformers, deformable convolution, memory systems, or learned routers; or one branch's logical cost corresponds to a real neuron, cache line, GPU kernel, or joule.
-
-The world remains favorable: A/B are stationary, exact bank members, and recur for long blocks.
-
-## Next attacker
-
-The next gate should remove the two biggest conveniences at once:
+Using the fair capacity-matched attacker:
 
 ```text
-no exact target in the bank
-no exhaustive 300-view search
+(fixedcap work - grow work) / grown branches
+= (613.2 - 1074.0) / 1
+~= -461 observation units
 ```
 
-Use continuous receiver geometry and a strict route budget. A learned/local route policy must then decide where to move next from the observations it already has. That is the point at which deformable sampling and active-attention baselines become mandatory.
+So the branch has **negative** value in this experiment.
+
+The old `+2021` number remains historically useful only as a demonstration that the answer depended on comparing growth against an artificially capacity-limited one-anchor baseline.
+
+## Cross-repo replication of a negative
+
+This reproduces the shape already recorded in `anttiluode/WildIdea` W3/K2:
+
+```text
+fixed alternatives + targeted probing
+~=
+predictable chart growth + targeted probing
+```
+
+WildIdea's conclusion was that having alternative models earned the effect while manufacturing them online did not earn architectural importance in that toy.
+
+SplatNeuron now has the same negative in a different representation:
+
+> **Fixed plastic observation capacity explains the two-view benefit more cheaply than growth.**
+
+That convergence should be treated as evidence *against* making branch birth central before a task forces it.
+
+## What survives
+
+The surviving object is smaller:
+
+```text
+plastic observation geometry
++
+route amortization
+```
+
+not:
+
+```text
+structural growth is useful
+```
+
+Growth is reopened only when there are **more distinct useful views than any matched fixed-capacity system can hold**, with explicit branch costs and replacement/pruning decisions.
+
+That becomes a capacity-allocation problem rather than the current two-view construction.
+
+## Code verdict
+
+`experiments/gate1_route_grow.py` now includes the fixed-capacity attacker and prints:
+
+```text
+SMOKE1_REPRODUCED = True
+GROWTH_EARNS_KEEP = False
+```
+
+CI is green when this negative result reproduces. A negative scientific conclusion is not a software failure.
+
+## Next real attacker
+
+Do not tune `growth_patience` to rescue the current world.
+
+The next experiment must first establish continuous budgeted routing with off-grid receivers and a fixed-capacity plastic baseline. Only after that should growth return in a world whose number of recurring useful views exceeds fixed capacity.
