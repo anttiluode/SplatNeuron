@@ -1,12 +1,7 @@
 name: Gate 11 map rate-distortion
 
 on:
-  push:
-    branches: ["agent/route-grow"]
-    paths:
-      - ".github/workflows/gate11_rate_distortion.yml"
-      - "experiments/gate11_map_rate_distortion.py"
-      - "docs/GATE11_PREREG_RATE_DISTORTION.md"
+  workflow_dispatch:
 
 jobs:
   rate:
