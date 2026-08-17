@@ -14,6 +14,12 @@ from .core import (
     route_receiver,
     wait_same_receiver,
 )
+from .continuous import (
+    ContinuousDomain,
+    ContinuousFieldEpisode,
+    ContinuousObservation,
+    FixedCapacityTracker,
+)
 
 __all__ = [
     "BranchingReceiver",
@@ -30,4 +36,8 @@ __all__ = [
     "nearest_geometry_index",
     "route_receiver",
     "wait_same_receiver",
+    "ContinuousDomain",
+    "ContinuousFieldEpisode",
+    "ContinuousObservation",
+    "FixedCapacityTracker",
 ]
