@@ -1,11 +1,7 @@
 name: MNIST compact-map attackers
 
 on:
-  push:
-    branches: ["agent/route-grow"]
-    paths:
-      - ".github/workflows/mnist_compact_attack.yml"
-      - "experiments/gate10c_gaussian_derivative.py"
+  workflow_dispatch:
 
 jobs:
   compact:
