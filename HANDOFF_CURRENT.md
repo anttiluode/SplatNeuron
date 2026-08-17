@@ -2,257 +2,258 @@
 
 Date: 2026-08-17
 
-## One-line thesis still alive
+## One-line state
 
-> **Changing the observation map has a measurable value region, but increasingly intelligent online admission rules have not yet beaten strong boring fixed policies.**
+> **The online-plasticity story mostly died. The strongest surviving result is a receiver-vs-decoder parameter-efficiency frontier: learning a narrow observation map can compile substantial downstream nonlinear computation into the front end.**
 
-The project is now much smaller than the morning's growth story.
+No novelty, neuroscience, or hardware claim is currently supported.
 
-## Current ledger
-
-```text
-Smoke 0    WAIT / ROUTE / CONSOLIDATE plumbing          works; WAIT null constructed
-Boundary0  WAIT <-> oracle ROUTE                         analytic nonzero-overlap crossover
-Smoke 1    ROUTE -> GROW                                 growth loses to fixed plastic capacity
-Gate 2     continuous fixed-capacity ROUTE              FAIL vs address cache on confirmation
-Boundary1  cache <-> ROUTE vs world drift               clear sign change / value region
-Gate 3     adaptive admission / PROBE                    fixed validated threshold survives
-```
-
-## Smoke 0
-
-The old A/B Gabor overlap is approximately machine zero, so 300 WAIT samples could never recover B in expectation. Keep only as plumbing. The script explicitly says:
+## Ledger
 
 ```text
-WAIT_VS_ROUTE_EVIDENCE_CLAIM = NOT_TESTED
+Smoke 0    WAIT/ROUTE/CONSOLIDATE plumbing          original WAIT null constructed
+Boundary0  WAIT <-> oracle ROUTE                     analytic nonzero-overlap crossover
+Smoke 1    online branch growth                     fixed plastic capacity wins
+Gate 2     continuous fixed-capacity ROUTE          address cache survives
+Boundary1  cache <-> ROUTE vs drift                 sign/value region measured
+Gate 3     hazard / PROBE admission                  best fixed threshold survives
+Gate 4     within-run self-tuning admission          robust fixed threshold survives
+Gate 5     Gabor vs matched generic manifold        generic RBF reproduces phase
+Gate 6     learned receiver vs decoder              positive efficiency result
+Gate 7     matched ~200 param mixed allocation      no interior optimum
+Gate 8     private branch + local collapse frontier no interior Y block
 ```
 
-## Boundary 0
+## Closed branches
 
-With nonzero current overlap `c`, equal Gaussian noise, total budget 8, and a 3-unit route tax:
+### Growth
+
+Two preallocated plastic anchors beat online branch growth in the A/B recurring-view toy:
 
 ```text
-WAIT SNR  ~ |c| sqrt(8)
-ROUTE SNR ~ sqrt(5)
+grow       total work 1074.0
+fixedcap   total work  613.2
 ```
 
-so the predicted crossover is
-
-```text
-|c|* = sqrt(5/8) ~= 0.790569
-```
-
-This asks when another view *could* repay its cost. ROUTE is oracle here.
-
-## Smoke 1 — growth negative
-
-The missing matched-capacity arm starts with two plastic anchors, second random, growth disabled.
-
-```text
-grow       acc=1.000  totalW=1074.0
-fixedcap   acc=1.000  totalW= 613.2
-```
-
-Same steady state, less transient work for fixed capacity. Fair branch value is about `-461` observation units.
+Same final accuracy and steady state. Fair branch value is negative.
 
 ```text
 GROWTH_EARNS_KEEP = False
 ```
 
-This independently reproduces `WildIdea` W3/K2: having alternatives can matter while manufacturing them online earns no architectural importance.
+This independently mirrors the `WildIdea` W3/K2 negative. Do not reopen growth unless recurring useful views greatly exceed fixed capacity and fixed-capacity replacement/cache policies are present from the start.
 
-Do not tune growth patience to rescue this.
+### Adaptive admission
 
-## Gate 2 — continuous rewrite and strongest null
-
-Gate 2 now does what the original bank implementation could not:
+Gate 3:
 
 ```text
-continuous u=(x,y,log-frequency,orientation)
-       -> render G(u) directly
-       -> true inner product <G(u), X>
+fixed threshold .45    mean late overlap .595
+hazard adaptive        .553
+PROBE band             .583
 ```
 
-There is no receiver bank, nearest-index snap, target coordinate, or exhaustive scan.
-
-All structured policies have fixed capacity `K=2` and exactly 8 observations per episode. The hidden source views drift continuously in all four receiver dimensions.
-
-The hybrid policy:
-
-```text
-probe existing anchors
-    |
-    +-- strong evidence -> WAIT
-    |
-    `-- weak evidence   -> two local SPSA route steps
-                           -> persist improved destination
-```
-
-Development used seeds `0..19`, `1000..1019`, and `2000..2019`. Untouched confirmation: `3000..3019`.
-
-Confirmation late overlap:
-
-```text
-address_cache     0.583
-hybrid_plastic    0.644
-hybrid_reset      0.575
-always_route      0.583
-random            0.148
-oracle            1.000
-```
-
-Paired seed-level contrasts:
-
-```text
-hybrid - cache        +0.061  95% CI [-0.005,+0.124]   NOT SEPARATED
-hybrid - reset        +0.068  95% CI [+0.009,+0.126]   survives
-hybrid - always       +0.061  95% CI [+0.007,+0.107]   survives
-```
-
-Therefore:
-
-```text
-GATE2_MECHANISM_KEEP = False
-GATE2_TASK_PERFORMANCE_CLAIM = NOT_ESTABLISHED
-```
-
-Do not tune the drift or threshold to turn this frozen confirmation into a pass.
-
-## Boundary 1 — cache versus ROUTE really is regime-dependent
-
-Sweep environmental drift with capacity, budget, router, admission threshold, and field fixed:
-
-```text
-scale   cacheOv   routeOv   delta       95% CI
----------------------------------------------------
-0.00     0.999     0.831   -0.168   [-0.211,-0.124]
-0.25     0.961     0.753   -0.209   [-0.254,-0.162]
-0.50     0.862     0.752   -0.110   [-0.165,-0.057]
-0.75     0.707     0.603   -0.104   [-0.245,+0.022]
-1.00     0.551     0.650   +0.099   [+0.029,+0.172]
-1.50     0.340     0.561   +0.221   [+0.115,+0.324]
-2.00     0.232     0.477   +0.244   [+0.154,+0.333]
-3.00     0.135     0.323   +0.188   [+0.089,+0.293]
-4.00     0.090     0.266   +0.175   [+0.130,+0.222]
-```
-
-At low drift, ROUTE is harmful because noisy admission triggers needless movement. At higher drift, stale fixed addresses lose observability and ROUTE repays its cost.
-
-Important correction: this sign change is partly policy-specific. Development sweeps showed that lowering the fixed threshold from `0.72` toward `0.45-0.55` sharply reduces low-drift false routes. Therefore Boundary 1 is evidence for a value region, not evidence that a fancy adaptive conductor is necessary.
-
-## Gate 3 — adaptive admission fails the best fixed threshold
-
-A separate drift × noise validation grid selected the strongest boring fixed admission threshold from:
-
-```text
-0.25, 0.35, 0.45, 0.55, 0.65
-```
-
-Winner:
-
-```text
-fixed threshold = 0.45
-```
-
-Then two more intelligent policies were frozen:
-
-```text
-HAZARD
-successful receiver displacement raises future willingness to ROUTE
-
-PROBE BAND
-strong evidence       -> WAIT
-weak evidence         -> ROUTE
-ambiguous evidence    -> confirm once, then decide
-```
+Gate 4 then gave online adaptation its last fair excuse: the drift/noise regime changed **within the same run**, with no regime label. A robust fixed threshold `.55` and a one-scalar self-tuner were frozen on a separate validation sequence.
 
 Fresh confirmation:
 
 ```text
-drift = {0.25, 1, 3}
-noise = {0.15, 0.24, 0.34}
-seeds = 14000..14005
+fixed .55       mean overlap .5640
+self-tune       mean overlap .5292
+delta          -0.0348
+95% CI         [-0.1573,+0.0842]
 ```
-
-Mean late overlap across all nine cells:
 
 ```text
-fixed 0.45    0.595   cells won 6/9
-hazard        0.553   cells won 0/9
-PROBE band    0.583   cells won 3/9
+ADMISSION_BRANCH_STATUS = CLOSED
 ```
 
-Seed-paired aggregate contrasts:
+Do not add a neural conductor or more hazard/PROBE knobs to this synthetic family.
+
+### Gabor-specific ROUTE story
+
+A generic diagonal RBF manifold was fitted to local Gabor overlap lengths and given the exact same fixed-capacity router/budget.
+
+Fresh five-point drift sweep:
 
 ```text
-hazard - fixed   -0.042   95% CI [-0.072,-0.007]
-PROBE  - fixed   -0.012   95% CI [-0.039,+0.024]
+drift     Gabor ROUTE-cache     RBF ROUTE-cache
+0.0            -0.031               -0.026
+0.5            -0.049               -0.021
+1.0            +0.038               +0.184
+2.0            +0.227               +0.301
+4.0            +0.151               +0.044
 ```
-
-So:
 
 ```text
-ADAPTIVE_HAZARD_EARNS_KEEP = False
-PROBE_BAND_EARNS_KEEP = False
-GATE3_FIXED_THRESHOLD_SURVIVES = True
+sign match                    5 / 5
+benefit-profile correlation   .759
+GABOR_SPECIFIC_CLAIM_EARNS_KEEP = False
 ```
 
-The adaptive policies had recognizable local value regions, but neither beat a validation-selected fixed rule over unseen regimes.
+So the early cache↔ROUTE phase is a generic smooth-observation-manifold result, not evidence for splats.
 
-This mirrors `WildIdea` W4b: once the boring fixed policy is selected honestly, an apparent adaptive increment can disappear.
+## Gate 6 — result that earned keep
 
-Do not tune Gate 3 further. It is closed.
+Task: `sklearn` handwritten-digit classification.
 
-## What survives now
+Every constrained model transmits exactly **16 real measurements**.
 
-The strongest current result is not a new neuron architecture. It is a constrained observation-control fact:
-
-> **WAIT, PROBE and ROUTE have different value regions under receiver staleness and observation noise, but simple fixed policies remain extremely strong in stationary synthetic families.**
-
-Continuous receiver geometry is now real in code, and persistent receiver state sometimes matters, but SplatNeuron has not yet earned a distinct ML architecture claim.
-
-## Legitimate next direction
-
-Do **not** open another static drift/noise grid and tune a smarter policy.
-
-A legitimate continuation needs the operating regime itself to change **within one run**, so a fixed validation-selected threshold cannot simply average over one stationary family.
-
-For example:
+Eight complex Gabor receivers learn only:
 
 ```text
-quiet / low-noise
-    -> sudden high-noise period
-    -> fast geometric drift
-    -> quiet again
+x, y, frequency, orientation
 ```
 
-The strongest baseline must still be the best robust fixed threshold selected before test.
-
-Measure **regret to the best action for each segment**, transition/recovery cost, and whether an online policy can identify that the regime changed without receiving a regime label.
-
-If adaptive admission still fails there, close the admission branch and move to a different SplatNeuron claim.
-
-## Gabor-specific stopping line
-
-Gate 2 finally makes Gabor geometry algebraically real rather than decorative list ordering. It still has not shown Gabors are necessary.
-
-If an arbitrary smooth continuous coordinate field with matched response correlation gives the same behavior, keep the generic active-sensing result and drop the Gabor-specific claim.
-
-## Growth reopening condition
-
-Growth stays dead until:
+Receiver geometry = `32` trainable scalars. Linear ten-class head = `170`.
 
 ```text
-M recurring useful views >> K fixed receiver slots
+learned receiver + linear = 202 trainable parameters
 ```
 
-Only then can structural birth/death buy something preallocation cannot. Any future growth experiment must include fixed-capacity replacement/cache policies from the beginning.
+The key attacker begins from the **same initial Gabor receiver geometry**, freezes it, and moves comparable trainable budget downstream.
+
+Eight deterministic stratified splits:
+
+```text
+learned receiver + linear          202 params   95.24%
+fixed receiver + H=7 MLP           199 params   89.76%
+```
+
+Paired gain:
+
+```text
++5.49 percentage points
+95% bootstrap CI [+3.40,+7.15]
+```
+
+Same-family controls on four splits:
+
+```text
+learned point geometry + linear        92.64%
+fixed same point geometry + MLP        85.35%
+
+learned Gaussian-pair geometry         90.83%
+fixed same Gaussian-pair + MLP         84.10%
+```
+
+So the broad effect is **not uniquely Gabor**.
+
+### Load-bearing information attack
+
+Keep the 16 Gabor measurements fixed and increase only decoder capacity:
+
+```text
+H=7      199 params    89.76%
+H=24     658 params    92.85%
+H=32     874 params    93.61%
+H=40    1090 params    93.99%
+H=48    1306 params    94.31%
+```
+
+Learned receiver remains:
+
+```text
+202 params             95.24%
+```
+
+Paired learned-minus-fixed:
+
+```text
+H7     +5.49   CI [+3.40,+7.15]
+H24    +2.40   CI [+1.11,+3.68]
+H32    +1.63   CI [+0.49,+2.71]
+H40    +1.25   CI [+0.31,+2.19]
+H48    +0.94   CI [-0.07,+1.94]
+```
+
+An RBF-SVM on the same fixed features also reached about `95%` on the first four splits.
+
+Therefore **fixed observation did not destroy the information**. A sufficiently powerful downstream function recovers it.
+
+Supported interpretation:
+
+> **Task-aligned receiver learning makes the downstream decision surface much cheaper. It compiles computation into the observation map.**
+
+This is the current strongest SplatNeuron result.
+
+## Gate 7 — tiny-budget interior does not win
+
+Near 200 total parameters:
+
+```text
+fixed receivers + H7 decoder          199 p   ~89.9%
+7/8 learned receivers + H6 decoder    200 p   ~93.1%
+8/8 learned receivers + linear        202 p   ~95.5%
+```
+
+The interior allocation beats the downstream-heavy endpoint but not the all-receiver endpoint.
+
+No Y block yet.
+
+## Gate 8 — true pre-collapse branch frontier
+
+Carrier remains fixed at **16 real channels**, but private receiver branches may exceed transmitted width.
+
+```text
+private Gabor branches
+        -> learned local linear collapse to 16
+        -> downstream decoder
+```
+
+Comparable ~750-param allocations:
+
+```text
+configuration             params   six-split mean
+-------------------------------------------------
+B8 direct / H27             771        96.11%
+B10 collapse / H14          764        94.95%
+B12 collapse / H11          755        94.63%
+B14 collapse / H8           746        93.84%
+B16 collapse / linear       762        95.46%
+```
+
+The two hard endpoints are close; every interior allocation is lower.
+
+```text
+INTERIOR_Y_BLOCK_EARNS_KEEP = False
+```
+
+Do not tune a fancier reducer until one wins. A new local reducer must have an independent motivation and keep both hard endpoints in the comparison.
+
+## Prior art boundary
+
+Gate 6 is not a novelty claim. Learnable Gabor filters, learned measurement matrices, differentiable sensor layouts, and joint sensor/camera + perception optimization already occupy the broad principle of task-driven sensing.
+
+See `docs/PRIOR_ART.md`.
+
+## Current research question
+
+SplatNeuron is no longer primarily an online-plasticity project.
+
+The live question is:
+
+> **At fixed communication width and controlled total resources, where should computation live: task-aligned receiver/feature generation, local pre-collapse reduction, or the downstream decoder?**
+
+Current answer on this tiny digit task:
+
+```text
+small budget     -> receiver learning is extremely efficient
+larger budget    -> a big decoder can recover fixed-observer information
+private branches -> dense local collapse gives no interior win
+```
+
+## Legitimate next moves
+
+1. **Generalize Gate 6 to another dataset / modality** before treating the 6.5x-ish parameter frontier as more than a small-data receipt.
+2. Measure FLOPs, wall time, memory movement and not just trainable parameter count.
+3. Test independently motivated sparse/local reducers against both Gate 8 endpoints; do not architecture-search toward a win.
+4. If returning to a brain model, use Gate 6 only as the modest computational analogy: learning can reshape a representation so that downstream readout becomes simpler. Do not claim that neurons literally implement these Gabor receivers.
 
 ## Stop lines
 
-- Do not rescue Gate 2 by tuning its frozen operating point.
-- Do not rescue Gate 3 by tuning adaptive parameters on its confirmation regimes.
-- Do not rescue growth by weakening fixed-capacity baselines.
-- Do not call higher receiver-target overlap an ML performance win unless downstream task performance also separates.
-- Do not add private recurrent state/write-back until ROUTE/admission earns itself against strong fixed policies in a genuinely nonstationary task.
-- Do not call the result Gabor-specific until a matched generic continuous geometry loses.
+- Admission branch is closed.
+- Growth branch is closed for capacity-matched two-view worlds.
+- Gabor-specific ROUTE story is closed.
+- No interior pre-collapse Y block has been found.
+- Do not call Gate 6 novel without a much stronger prior-art comparison and external-task replication.
