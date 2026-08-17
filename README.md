@@ -20,28 +20,37 @@ Gate 9     PCA/DCT fixed-basis attack                PCA closes Gate-6 accuracy 
 Gate 10    28x28 MNIST scale                         resource currencies split
 Gate10b/c  matched compact families                  Gaussian derivatives match Gabor
 Gate 11    literal map-bit rate/distortion           compact high-accuracy frontier survives
-Gate 11b   same codec at D=784                       description-rate advantage scales
+Gate 11b   same codec at D=784                       fixed family remains expressive
+Gate 12    CIFAR-10 complexity attack                preregistered / running
 ```
 
 The negative history is part of the result. See [`HANDOFF_CURRENT.md`](HANDOFF_CURRENT.md).
 
-# The strongest current result
+# Current scientific center
 
-The surviving claim is not “neurons should be Gabors” and not “move computation into observation.” Those ideas are too broad or already occupied.
+The strongest statement is **not**:
 
-The current receipt is narrower:
+> a fixed-size structured map stays O(1) while a dense map grows O(D).
 
-> **A compact structured observation map can retain useful task performance with a serialized description whose size stays nearly constant as input dimension grows, while a dense fitted projection requires a description that grows with input dimension.**
+That follows from choosing a fixed-parameter family versus an unstructured dense matrix.
 
-The critical point is that this is about **observer description rate**. It is not automatically a projection-FLOP, wall-time, RAM, energy, or physical-egress advantage.
+The empirical question is:
 
-## Gate 9: PCA kills the original Gate-6 interpretation
+> **How much structured observer capacity is actually sufficient to reach a common task-error target as the data/task become more complex?**
 
-Gate 6 fixed egress at **16 real measurements** and found on 8x8 sklearn digits:
+Gate 11/11b showed that the same tiny structured family remained useful from 8x8 digits to 28x28 MNIST. That is an **expressivity receipt**, not a discovered asymptotic law.
+
+The next attack, Gate 12, moves to CIFAR-10 and allows compact observer capacity to grow. The working hypothesis is that compact observer cost should track **task/intrinsic complexity**, while a dense projection also pays explicitly for sampled input dimension.
+
+See [`docs/GATE12_PREREG_CIFAR_COMPLEXITY.md`](docs/GATE12_PREREG_CIFAR_COMPLEXITY.md).
+
+# Gate 9: PCA kills the original Gate-6 interpretation
+
+Gate 6 fixed egress at 16 real measurements and found on 8x8 sklearn digits:
 
 ```text
-learned Gabor + linear head           202 trainable params   95.24%
-random-frozen same Gabor + H7 MLP     199 trainable params   89.76%
+learned Gabor + linear head           95.24%
+random-frozen same Gabor + H7 MLP     89.76%
 ```
 
 But the frozen map was random. Gate 9 adds strong fixed bases on the same eight split IDs:
@@ -61,13 +70,9 @@ Paired PCA-minus-Gabor:
 
 So PCA and learned Gabor are not separated. Gate 6 does **not** establish that task-trained sensing beats a good fixed 16-channel basis.
 
-See [`docs/GATE9_MEASUREMENT_MAP_CONTROLS.md`](docs/GATE9_MEASUREMENT_MAP_CONTROLS.md).
+# Gate 10: the resource currencies split
 
-## Gate 10: different resource currencies scale differently
-
-The same 32-scalar compact receiver budget was moved from `D=64` to real 28x28 MNIST (`D=784`) without increasing geometry parameter count.
-
-Frozen two-seed means:
+Move the same 32-scalar compact map from `D=64` to real 28x28 MNIST (`D=784`). Frozen two-seed means:
 
 ```text
 learned compact Gabor          88.33%
@@ -78,26 +83,27 @@ random compact Gabor + H48     91.58%
 full 784 pixels + linear       90.82%
 ```
 
-Three resource trends immediately separate:
+Different resource currencies move in different directions:
 
 ```text
 nominal dense/compact map-description ratio
-    32x at D=64  ->  392x at D=784          GROWS
+    32x at D=64  ->  392x at D=784          UP
 
 matched tiny-decoder advantage
-    +5.49 points -> +2.38 points             SHRINKS
+    +5.49 points -> +2.38 points             DOWN
 
 generic dense digital MAC ratio
-    ~1.92x -> ~1.086x                        COLLAPSES TOWARD 1
+    ~1.92x -> ~1.086x                        DOWN toward 1
+
+logical egress
+    16 -> 16                                  FLAT
 ```
 
-There is no single valid number called “the efficiency gain.”
+This table is more important than any single ratio. There is no valid scalar called “the efficiency gain.”
 
-See [`docs/GATE10_MNIST_SCALE.md`](docs/GATE10_MNIST_SCALE.md).
+# Gate 10c: frequency is not the mechanism
 
-## Gate 10b/c: frequency does not earn the result
-
-Simple nonoscillatory compact maps initially lagged the Gabor on MNIST, but a stronger matched family closes the gap:
+A matched nonoscillatory family closes the Gabor gap on MNIST:
 
 ```text
 same 32 map scalars
@@ -114,17 +120,13 @@ The derivative map learns `(x,y,scale,orientation)` and emits first/second direc
 GABOR_OR_FREQUENCY_SPECIFIC_KEEP = False
 ```
 
-What survives is **compact structured localized selectivity**, not oscillation.
-
-See [`docs/GATE10BC_COMPACT_FAMILY_ATTACKERS.md`](docs/GATE10BC_COMPACT_FAMILY_ATTACKERS.md).
+What survives is compact structured localized selectivity, not oscillation.
 
 # Gate 11: literal observation-map bits
 
-Counting 32 geometry floats versus 1024 PCA coefficients was still only a proxy for description length. Gate 11 was preregistered before results and literally bit-packed post-training map values.
+Gate 11 literally bit-packed post-training observation-map values. The linear decoder stayed frozen; no per-rate retraining was allowed.
 
-Fresh 8x8 split IDs `7200..7207`, same 16-value logical interface, same 680-byte FP32 linear head, no per-rate retraining.
-
-Full accuracies:
+Fresh 8x8 means:
 
 ```text
 Gabor                   94.13%
@@ -133,113 +135,105 @@ PCA-16                  93.92%
 DCT-16                  90.73%
 ```
 
-Smallest map payload within one percentage point of each family's own full precision:
+The old report used “within one percentage point of each family's own full precision” as a useful diagnostic:
 
 ```text
-Gabor                   24 B   6 bits/value   94.10%
-Gaussian derivative     24 B   6 bits/value   93.68%
-PCA-16                 576 B   4 bits/value   93.65%
-DCT-16                   0 B   algorithmic    90.73%
+Gabor                   24 B
+Gaussian derivative     24 B
+PCA-16                 576 B
+DCT-16                   0 B
 ```
 
-So at the high-accuracy part of this task:
+That is **not iso-accuracy** and should not be the publication headline. Gate 12 switches to common validation-defined error targets and held-out test reporting.
+
+One robust qualitative finding remains: compact geometry is more brittle per coordinate at 2–3 bits. It wins by having **few high-leverage values**, not unusually robust values.
+
+# Gate 11b: what actually survived the resolution increase
+
+With the same frozen codec on fresh 28x28 MNIST seeds:
 
 ```text
-PCA / compact map payload     576 / 24 = 24x
-```
-
-But the common head reduces the total deployment-state ratio:
-
-```text
-compact   24 + 680 = 704 B
-PCA      576 + 680 = 1256 B
-ratio                 1.78x
-```
-
-DCT correctly owns the zero-map-payload / lower-accuracy corner. At roughly `90.7%`, no learned map description is needed at all under the shared analytic-DCT protocol.
-
-Also, compact geometry is **more brittle per value** at 2–3 bits. Its win comes from having very few high-leverage values, not from those values being individually robust.
-
-See [`docs/GATE11_RATE_DISTORTION_RESULT.md`](docs/GATE11_RATE_DISTORTION_RESULT.md).
-
-# Gate 11b: the bit-rate advantage scales
-
-Gate 11b froze the same codec before moving to fresh MNIST seeds `9200/9201`.
-
-Full means:
-
-```text
+full means
 compact Gabor             88.99%
 compact Gaussian deriv.   88.39%
 PCA-16                    86.03%
 DCT-16                    83.94%
 ```
 
-Smallest map payload within one percentage point of own full precision:
+For the same within-own-ceiling diagnostic:
 
 ```text
-                         D=64 Gate11     D=784 Gate11b
--------------------------------------------------------
-compact Gabor                24 B             24 B
-compact Gaussian deriv.      24 B             24 B
-PCA                          576 B           4768 B
-DCT                            0 B              0 B
+                         D=64          D=784
+compact useful map        24 B           24 B
+PCA useful map           576 B         4768 B
 ```
 
-Input dimension increased:
+The arithmetic growth of the ratio is not surprising by itself: fixed-P structured descriptions do not grow with D while dense coefficient arrays do.
+
+What could have failed, but did not on MNIST, is that **32 structured geometry values remained enough to retain useful task performance at the higher sampling resolution.**
+
+That is the result Gate 12 now attacks on natural images.
+
+# Gate 12: common-error / intrinsic-complexity attack
+
+Gate 12 is frozen before results.
+
+Dataset:
 
 ```text
-784 / 64 = 12.25x
+CIFAR-10 -> fixed grayscale luminance
+32 x 32, D=1024
+12k train / 3k validation / 10k standard test
+fresh seeds 9300, 9301
 ```
 
-The compact useful map payload stayed **exactly 24 bytes**.
-
-PCA's useful payload grew:
+Capacity sweep:
 
 ```text
-4768 / 576 = 8.28x
+M = 16, 32, 64, 128 logical outputs
+structured derivative map = 2M geometry values
+PCA-M
+DCT-M
+full-pixel linear reference
 ```
 
-although PCA needed fewer bits per coefficient at scale (`3b` instead of `4b`). Coefficient count dominated.
-
-The observed map-only rate ratio therefore grows from:
+Common targets are defined from the full-pixel **validation** reference:
 
 ```text
-24.0x  ->  198.7x
+T95 = 0.95 * full-pixel validation accuracy
+T90 = 0.90 * full-pixel validation accuracy
 ```
 
-and the total observer+common-head state ratio grows from:
+Configurations are selected using validation only and then reported on the untouched standard test set.
+
+For each target report separately:
 
 ```text
-1.78x  ->  7.74x
+map payload bytes
+linear-head bytes
+total explicit state
+logical egress M
+test accuracy
 ```
 
-At the absolute `85%` MNIST floor:
+The preregistered attack is specifically aimed at the old 24-byte setting:
 
 ```text
-Gabor       16 map B    86.05%
-Derivative  24 map B    88.10%
-PCA       4768 map B    85.78%
-DCT       unreached
+M=16
+32 geometry values
+6 bits/value
+24 map bytes
 ```
 
-This is the strongest current SplatNeuron receipt:
-
-> **Across the preregistered 8x8 and 28x28 tests, a 32-value structured observation map retained near-full task accuracy at a constant 24-byte serialized map payload, while the preregistered row-scaled PCA-16 payload grew from 576 to 4,768 bytes.**
-
-Important limitations remain: only two input dimensions, only two MNIST seeds, a specific fixed-rate PCA codec, digit tasks, and no claim about dense projection compute.
-
-See [`docs/GATE11B_MNIST_RATE_RESULT.md`](docs/GATE11B_MNIST_RATE_RESULT.md).
+If it still reaches T95 on CIFAR-10, that is a genuinely stronger expressivity result. If compact capacity must grow, record the required bytes/channels. If nothing through M=128 reaches T90, the current compact family fails the task.
 
 # Why SpectralNeuron belongs on the same ladder
 
-[`anttiluode/SpectralNeuron`](https://github.com/anttiluode/SpectralNeuron) asks the rung immediately after logical observation.
+[`anttiluode/SpectralNeuron`](https://github.com/anttiluode/SpectralNeuron) probes the next resource after logical observation.
 
-Its bucket collapses a waveform to total power; its resonant forks preserve selective channels. With three modulated carriers on one shared noisy wire, forks achieved about `3.1x` self/crosstalk separation versus `1.0x` for the bucket, with finite off-diagonal leakage.
+Its resonant forks versus total-energy bucket are ordinary frequency-division/selectivity experiments, but they expose something Gates 6-12 mostly idealize away:
 
-That is ordinary frequency-division multiplexing in neuron-flavoured primitives. Its relevance is that it exposes a resource Gates 6-11 mostly fixed by fiat:
-
-> **logical consequences sharing one physical medium interfere.**
+> **logical consequences interfere when they must share a physical medium.**
 
 The combined pipeline is:
 
@@ -254,11 +248,28 @@ rich input x
     -> task
 ```
 
-SplatNeuron now has evidence about the **description rate of `C_theta`**. SpectralNeuron supplies a toy instrument for the **crosstalk cost of `H/R`**.
+A bridge that merely compares FDM with a bad mixer would rediscover communications theory. The interesting coupling question is narrower:
 
-The common principle is selectivity under resource constraints, not “thought is frequency.”
+> **Can spending description budget in C_theta make the exported consequences more separable on a constrained carrier?**
 
-See [`docs/SPECTRALNEURON_RELATION.md`](docs/SPECTRALNEURON_RELATION.md) and [`docs/OBSERVER_RESOURCE_FRONTIER.md`](docs/OBSERVER_RESOURCE_FRONTIER.md).
+Any such bridge needs matched generic linear/code-division attackers and must name the MIMO/channel-capacity literature explicitly.
+
+# Prior-art boundary
+
+The broad ingredients are occupied:
+
+```text
+learned sensing matrices                old
+structured replacements for dense maps  old
+compact parameterized filters           old
+post-training quantization               old
+bit-depth scaling laws                   old
+FDM / shared-channel demultiplexing      old
+```
+
+The current candidate contribution, if it survives, is a **measurement protocol / worked resource frontier**: common task-error targets, literal packed operator bytes, and separate accounting of map description, materialized compute/storage, logical egress, carrier interference and decoder cost.
+
+See [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) and [`docs/PRIOR_ART_OBSERVER_RATE.md`](docs/PRIOR_ART_OBSERVER_RATE.md).
 
 # What is still not earned
 
@@ -268,22 +279,14 @@ adaptive admission                  no
 Gabor/frequency-specific mechanism  no
 interior pre-collapse Y block       no
 learned observer > good fixed PCA   no on 8x8 Gate 9
+universal compact-map scaling law   no
 FLOP scaling from map compression   no
-egress-bandwidth reduction          no; logical width is fixed at 16
+egress-bandwidth reduction          no
 physical energy/hardware benefit    no
-universal compression law           no
+novel structured-matrix idea        no
 ```
 
-# Next legitimate work
-
-The allowed next steps are now much narrower:
-
-1. **Replicate/generalize the description-rate result** on more fresh MNIST seeds or a non-digit dataset without changing the codecs.
-2. **Bridge to SpectralNeuron** by putting the 16 logical consequences through a controlled shared physical channel and measuring task error versus crosstalk / carrier budget.
-
-Do not tune Gate-11 codecs on the same data, and do not reopen the frequency or neuron-shape stories.
-
-## Run
+# Run
 
 ```bash
 python -m pip install -e .
@@ -297,6 +300,5 @@ pip install -e '.[scale]'
 python experiments/gate10_mnist_scale_v2.py --download
 python experiments/gate10c_gaussian_derivative.py --download
 python experiments/gate11b_mnist_map_rate.py --download
+python experiments/gate12_cifar_complexity_rate.py --download
 ```
-
-See [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) for occupied territory around compact learnable front ends and task-driven sensing.
