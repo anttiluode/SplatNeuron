@@ -19,6 +19,30 @@ input x
   -> output
 ```
 
+## Three different quantities called `rate`
+
+Keep these separate:
+
+```text
+operator rate
+    bits needed to specify/fix C_theta once
+    -> Gate 11/12 L_map
+
+representation / egress rate
+    values or bits per sample produced as z = C_theta(x)
+    -> M_logic, B_egress
+
+physical channel rate
+    bits/s, bandwidth, carriers, SNR and interference used to transport z
+    -> P_phys, I_cross and channel coding
+```
+
+A tiny operator description does **not** imply low per-sample communication. Gate 11's `24 B` is an operator payload under a shared schema; every sample can still emit `M` logical values.
+
+Likewise, a zero-learned-map DCT can emit a wide representation, and an expensive learned observer can emit a narrow one.
+
+Information-bottleneck, source-coding and semantic-communication arguments often concern representation/data/channel rate. They should not be cited as though they were the same quantity as operator-description rate.
+
 ## Resource vector
 
 For each system report, at minimum:
