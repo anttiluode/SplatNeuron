@@ -1,6 +1,6 @@
 # Prior art / attackers
 
-SplatNeuron currently makes **no novelty claim**. Several nearby lines already own major pieces of the idea.
+SplatNeuron currently makes **no novelty claim**. Several nearby lines already own major pieces of the idea, and one of Antti's own earlier repos now supplies a directly relevant negative control.
 
 ## Input-dependent sampling geometry
 
@@ -26,6 +26,24 @@ Therefore fast ROUTE alone is occupied territory.
 
 Therefore lifetime adaptation alone is occupied territory.
 
+## Internal attacker: WildIdea W3/K2
+
+`anttiluode/WildIdea` records an off-repo W3/K2 boundary in which a preallocated bank of three alternative charts plus disagreement-directed probing matched predictable online chart growth.
+
+Reported switch/re-entry probe counts:
+
+```text
+fixed bank + random probes         84.6 / 56.8
+fixed bank + disagreement probes    2.6 /  2.5
+predictable growth + disagreement   3.3 /  1.9
+```
+
+WildIdea's frozen interpretation is that **having alternatives mattered; manufacturing them online did not earn architectural importance in that toy.**
+
+SplatNeuron Smoke 1 independently reproduced the same shape with plastic Gabor receivers: two preallocated plastic anchors beat online branch growth at identical eventual accuracy and steady-state work.
+
+This is now a mandatory attacker against structural-growth claims in this repo.
+
 ## Structural plasticity in biology
 
 These are biological motivation, not implementation evidence.
@@ -48,19 +66,19 @@ SplatNeuron deliberately postpones recurrent write-back until plastic observatio
 
 ## Narrow research question left open
 
-The current object is the **combination**:
+After the fixed-capacity attack, the live object is narrower:
 
 ```text
 active sensing / input-dependent receiver movement
         +
 within-lifetime persistent consolidation of useful receiver geometry
         +
-optional structural branch birth/death
-        +
 explicit accounting of observation/search work
 ```
 
-The claim to test is not that the ingredients are new. It is whether persistent plasticity of the **observation map itself** can amortize repeated active sensing in a useful and scalable way.
+Structural growth is **not** currently supported. It may return only in tasks where useful recurring views exceed matched fixed capacity.
+
+The claim to test is whether persistent plasticity of the **observation map itself** can amortize repeated active sensing in a useful and scalable way.
 
 Serious future baselines must include at least:
 
@@ -70,6 +88,7 @@ Serious future baselines must include at least:
 - deformable-convolution style dynamic offsets;
 - learned routing / sparse retrieval;
 - differentiable plasticity / fast-weight recurrence;
+- **fixed-capacity plastic receiver banks**;
 - simple cache/table of previously useful observation destinations;
 - oracle receiver placement.
 
