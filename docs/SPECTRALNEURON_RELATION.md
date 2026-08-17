@@ -2,17 +2,30 @@
 
 Date: 2026-08-17
 
-`anttiluode/SpectralNeuron` and SplatNeuron are best understood as experiments on the same object: an **observation operator** `C` that maps a richer medium into a smaller set of receiver-visible consequences.
-
-They test different coordinates of that operator.
-
-## SpectralNeuron: does selectivity preserve distinctions on a shared medium?
-
-SpectralNeuron compares two integrate/fire/reset units:
+`anttiluode/SpectralNeuron` and SplatNeuron are best understood as experiments on different parts of the same **observation pipeline**.
 
 ```text
-BUCKET   integrates total rectified energy
-FORK     integrates energy near a selected resonance
+rich source x
+    -> observation map C_theta
+    -> logical consequences z
+    -> physical/shared channel H
+    -> receiver/demultiplexer R
+    -> recovered consequences z_hat
+    -> decoder g_phi
+    -> task
+```
+
+SpectralNeuron mostly exposes `H/R`: selectivity and crosstalk on a shared physical carrier.
+
+SplatNeuron mostly idealizes `H=I` and asks about `C_theta` / `g_phi`: observation-map description, logical width, and decoder cost.
+
+## SpectralNeuron: selectivity preserves distinctions on a shared medium
+
+SpectralNeuron compares:
+
+```text
+BUCKET   integrate total rectified energy
+FORK     integrate energy near a selected resonance
 ```
 
 At matched loud input power:
@@ -23,17 +36,15 @@ At matched loud input power:
 broadband noise   fork  0   bucket 33
 ```
 
-So the bucket's observation is effectively a severe collapse: many spectrally different inputs map to the same total-power consequence.
+The bucket aliases spectrally different inputs into one total-power consequence. The fork preserves another coordinate by being selective.
 
-The fork preserves another coordinate of the input by being selective.
-
-Part B then puts three modulated carriers on **one shared noisy wire**:
+Part B sums three modulated carriers onto **one shared noisy wire**:
 
 ```text
 25 Hz / 45 Hz / 75 Hz
 ```
 
-and reports:
+and reports roughly:
 
 ```text
 fork    self-correlation ~0.62   crosstalk ~0.20   separation ~3.1x
@@ -42,112 +53,153 @@ bucket  self-correlation ~0.32   crosstalk ~0.32   separation  1.0x
 
 with finite off-diagonal leakage up to about `0.34`.
 
-This is ordinary frequency-division multiplexing expressed in neuron-flavoured primitives, not new signal-processing mathematics. But it measures something SplatNeuron Gate 6 does not:
+This is ordinary frequency-division multiplexing expressed in neuron-flavoured primitives, not new signal-processing mathematics. Its value here is that it measures something SplatNeuron originally fixed by fiat:
 
-> **selective channels sharing one carrier interfere, and the egress/channel budget has a measurable crosstalk price.**
+> **selective logical channels sharing one physical carrier interfere.**
 
-## SplatNeuron Gate 6/9: how expensive is the observation map itself?
+## SplatNeuron: description-quality and decoder allocation
 
-Gate 6 fixes output width at 16 real measurements and asks where a small trainable budget should live.
-
-Gate 9 adds the missing strong fixed-basis controls and shifts the surviving question toward **measurement-map description cost**:
+Gate 9 on 8x8 digits:
 
 ```text
-PCA-16 + linear             ~95.4%
-learned Gabor + linear      ~95.2%
-DCT-16 + linear             ~92.9%
+PCA-16 + linear             95.42%
+learned Gabor + linear      95.24%
+DCT-16 + linear             92.85%
 ```
 
-on the current 8x8 digits protocol.
+PCA essentially closes the accuracy gap, so “task-trained sensing beats a good fixed basis” is not established.
 
-PCA essentially closes the accuracy gap, so 'task-trained sensing beats good fixed sensing' is not established.
-
-But the map descriptions differ sharply:
+The map descriptions differ:
 
 ```text
 PCA projection              16 * D coefficients
-8 complex Gabor geometry     8 * 4 = 32 scalars
-DCT                          algorithmic / very low description cost
+8 compact branches          32 geometry scalars
+DCT                          algorithmic / low stored map description
 ```
 
-At `D=64`, dense PCA uses 1024 projection coefficients versus 32 Gabor geometry scalars. At `D=784`, the ratio becomes 12544 versus 32.
+Gate 10 moves from `D=64` to `D=784` without increasing the 32-scalar compact-map budget.
 
-## The combined ladder
-
-The two repos compose into a more useful ladder than 'neurons think in frequency':
+Two-seed MNIST means:
 
 ```text
-1. NO SELECTIVITY
-   collapse rich input to total energy / one indiscriminate consequence
-   -> distinctions alias
-   -> SpectralNeuron bucket
-
-2. FIXED SELECTIVE OBSERVERS
-   preserve several task-relevant coordinates
-   -> multiplexing becomes possible but finite crosstalk appears
-   -> SpectralNeuron forks
-   -> DCT / PCA / fixed receiver banks
-
-3. COMPACT PARAMETERIZED OBSERVERS
-   describe a selective observation map with far fewer parameters than
-   a dense unstructured matrix
-   -> current SplatNeuron Gate 9 question
-
-4. TASK-TRAINED OBSERVERS
-   tune the compact parameterization to the task
-   -> Gate 6 showed this beats random frozen geometry
-   -> PCA control shows learning is not automatically better than a
-      strong fixed subspace
-
-5. ONLINE / STRUCTURAL OBSERVER PLASTICITY
-   change the observation map during operation
-   -> most current SplatNeuron routing/growth claims failed strong controls
-   -> remains unearned
+learned compact Gabor       88.33%
+PCA-16                      85.23%
+DCT-16                      83.39%
+random Gabor + H48          91.58%
+full pixels + linear        90.82%
 ```
 
-## What frequency does and does not mean
+The resulting resource laws diverge:
 
-SpectralNeuron proves a **specific selective basis** can separate signals that a total-energy detector aliases.
+```text
+map-description ratio       32x -> 392x        grows
+tiny-decoder advantage      +5.49 -> +2.38 pp  shrinks
+dense digital MAC ratio     ~1.92x -> ~1.086x  collapses toward 1
+```
 
-SplatNeuron Gate 5 then showed that its cache<->ROUTE phase was reproduced by a generic smooth RBF observation manifold, and Gate 6 found learned point receivers close to learned Gabors.
+So map description, compute, logical width, and decoder capacity are separate currencies.
 
-Therefore the surviving abstraction is not:
+## Frequency is explicitly not the SplatNeuron result
 
-> computation is fundamentally frequency-coded.
+Simple nonoscillatory compact maps initially lagged the MNIST Gabor:
+
+```text
+learned points                   79.84%
+Gaussian pair                    85.27%
+Gabor                            88.33%
+```
+
+A stronger matched nonoscillatory family removes the apparent frequency advantage:
+
+```text
+8 steerable Gaussian-derivative branches
+(x,y,scale,orientation)          32 map scalars
+first + second derivatives       16 outputs
+same linear head
+
+Gaussian derivative              88.56%
+Gabor                            88.33%
+```
+
+Both frozen seeds tell the same story. The tiny mean difference is not a superiority claim; it is enough to reject the intended special-form claim:
+
+```text
+GABOR_OR_FREQUENCY_SPECIFIC_KEEP = False
+```
+
+Therefore the relation between the repos is **not**:
+
+> SpectralNeuron proves frequency and SplatNeuron learns frequency.
 
 It is:
 
-> **a receiver must preserve the distinctions required by its downstream use; selectivity, observation-map complexity, and interference determine the cost of doing so.**
+> **SpectralNeuron demonstrates that selective channels can preserve distinctions while sharing a medium, with a measurable crosstalk cost. SplatNeuron asks how compactly a useful selective observation map can be described and how much downstream decoding is then required.**
 
-Frequency is one excellent engineering coordinate because oscillatory carriers naturally multiplex, but it is not currently the unique computational ingredient.
+Frequency is one excellent engineering coordinate for multiplexing. Steerable derivatives show it is not the unique compact observation form in the current vision task.
 
-## The missing experiment joining the repos
-
-Gate 6 currently says `16 channels` by fiat. SpectralNeuron shows that real shared channels have leakage.
-
-A direct bridge would hold a **single physical/shared carrier budget** fixed and compare observation maps under controlled interference:
+## Combined ladder
 
 ```text
-source / image features
-        |
-        v
-M selectively encoded channels on one shared medium
-        |
-   finite crosstalk
-        |
-        v
-receiver bank
-        |
-        v
-task decoder
+1. INDISCRIMINATE COLLAPSE
+   rich input -> one total-energy consequence
+   -> distinctions alias
+   -> SpectralNeuron bucket
+
+2. SELECTIVE OBSERVERS
+   preserve several relevant coordinates
+   -> SpectralNeuron forks
+   -> DCT / PCA / local derivative / Gabor banks
+
+3. COMPACT PARAMETERIZED OBSERVERS
+   describe useful selectivity with few scalars
+   -> current SplatNeuron Gate 9/10 question
+
+4. TASK-TRAINED COMPACT OBSERVERS
+   tune that short description to the task
+   -> useful on MNIST, but not uniquely Gabor/frequency
+
+5. PHYSICAL SHARED-CARRIER REALIZATION
+   logical consequences must coexist on finite physical bandwidth
+   -> crosstalk / demultiplexing cost
+   -> SpectralNeuron's missing contribution to SplatNeuron
+
+6. ONLINE / STRUCTURAL OBSERVER PLASTICITY
+   change observation geometry during operation
+   -> current SplatNeuron growth/admission stories failed strong controls
+   -> unearned
+```
+
+## Direct bridge experiment
+
+Gate 10 still says `M=16 logical values` as though they are perfect independent wires. SpectralNeuron says real shared carriers leak.
+
+A direct bridge should hold a **physical carrier budget** fixed:
+
+```text
+x -> C_theta -> z in R^M
+                 |
+                 v
+          shared channel H
+          physical width P < M
+                 |
+                 v
+          selective receiver R
+                 |
+                 v
+               z_hat
+                 |
+                 v
+              decoder
 ```
 
 Sweep:
 
 ```text
-M                     number of logical channels
-map description cost  dense / structured / algorithmic
-channel spacing/Q      or a generic matched interference parameter
+M                     logical observation width
+P                     physical carrier width / count
+map description bits  dense / structured / algorithmic
+channel condition     crosstalk / noise / spacing
+receiver cost         demultiplexer state/compute
 decoder capacity
 ```
 
@@ -155,14 +207,15 @@ Measure jointly:
 
 ```text
 task accuracy
-crosstalk matrix
-bytes / physical carrier count
-map-description bytes
+full crosstalk matrix
+map-description bits
+physical bandwidth / carrier count
+receiver/demux compute
 decoder compute
 ```
 
-That would put SpectralNeuron's measured egress/interference budget and SplatNeuron's receiver/decoder allocation budget on the **same frontier**.
+Frequency-division multiplexing can be one arm, but a matched generic linear mixing/demixing channel is mandatory so frequency cannot win by narrative.
 
 ## One-line relation
 
-> **SpectralNeuron asks how much distinction survives when selective receivers share a medium; SplatNeuron asks how cheaply the selective observation map and its downstream decoder can be represented. They are consecutive resource-allocation rungs, not evidence that frequency itself is the general principle.**
+> **SpectralNeuron measures the interference price of preserving several selective consequences on one physical medium; SplatNeuron measures the description and decoder price of producing useful selective consequences in the first place. They are consecutive resource-allocation rungs, not evidence that frequency itself is the general principle.**
