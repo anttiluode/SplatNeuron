@@ -1,70 +1,67 @@
 # SplatNeuron
 
-> **Use can shorten the path to evidence.**
+> **Use can shorten the path to evidence — but only when changing the receiver is worth paying for.**
 
-SplatNeuron is a research program about **plastic observation geometry**: a computation can change where/how it observes a field during operation, and repeated useful observation routes may become cheaper through persistent geometry.
+SplatNeuron is a research program about **plastic observation geometry**: a computation can change where/how it observes a field during operation, and repeated useful observation routes may become persistent receiver geometry.
 
-The repo began with a stronger structural-growth story. The first adversarial control cut that story down. That correction is now part of the project rather than hidden history.
+The repo began with a stronger dendritic-growth story. Strong boring controls have repeatedly cut that story down. Those negatives are part of the result.
 
 ## Current ledger
 
 ```text
 Smoke 0    ROUTE / CONSOLIDATE plumbing                 works; WAIT null was constructed
-Boundary0  nonzero-overlap WAIT <-> ROUTE crossover     implemented as quantitative boundary
-Smoke 1    ROUTE -> GROW                                 growth loses to fixed plastic capacity
-Gate 2     budgeted continuous ROUTE                    next architectural gate
+Boundary0  nonzero-overlap WAIT <-> oracle ROUTE        quantitative SNR/cost crossover
+Smoke 1    ROUTE -> GROW                                growth loses to fixed plastic capacity
+Gate 2     continuous off-grid ROUTE                    fails to separate from address cache
+Boundary1  cache <-> ROUTE vs environmental drift       sign change measured
 ```
 
 No novelty, neuroscience, performance, or hardware claim is made.
 
-## The live idea
+## The live object
 
-A receiver is parameterized by continuous Gabor geometry:
+A receiver is a continuous four-dimensional coordinate
 
 ```text
-q = (x, y, sigma, frequency, orientation, phase)
+u = (x, y, log-frequency, orientation)
 ```
 
-and observes a common complex field by inner product with its localized template.
+mapped to a localized complex Gabor template `G(u)`.
 
-The key operational distinction is:
+A receiver observes the current field through
 
 ```text
-WAIT   = spend more observations through the same map C
-ROUTE  = change C
+z = <G(u), X>
+```
+
+The core runtime distinction is:
+
+```text
+WAIT   = spend more observations through the same receiver
+ROUTE  = spend observations changing the receiver
 ```
 
 The plastic extension is:
 
 ```text
-successful repeated ROUTE
-        -> persistent receiver geometry
-        -> lower future observation/search work
+successful ROUTE
+    -> persist an improved receiver address
+    -> lower future route cost if the relationship recurs
 ```
 
-This is deliberately stronger than ordinary caching only if the geometry itself helps acquire/generalize routes. If a plain address table matches it, keep the table and kill the stronger story.
+Growth is currently **not** part of the surviving claim.
 
-## Smoke 0 — useful mechanism, weak experiment
+## Smoke 0 — useful plumbing, invalid WAIT receipt
 
-The original A/B targets were chosen at opposite corners/frequencies/orientations of a 300-Gabor bank.
-
-The actual overlap is essentially zero:
+The first A/B bank targets had essentially zero overlap:
 
 ```text
 |Gram[home_A,target_B]| ~= 4e-14
 ```
 
-Therefore 300 WAIT samples at A cannot recover B in expectation. The old WAIT failure was true by construction.
+So repeating the A receiver could never recover B in expectation. That experiment is retained only as a smoke test for routing, consolidation, regime-shift search spikes, and relearning.
 
-The script is kept as a smoke test because it still verifies:
-
-```text
-regime shift -> expensive ROUTE
-repeated useful route -> receiver consolidation
-stable regime -> cheap observation again
-```
-
-but it now prints:
+The script explicitly prints:
 
 ```text
 WAIT_VS_ROUTE_EVIDENCE_CLAIM = NOT_TESTED
@@ -72,168 +69,177 @@ WAIT_VS_ROUTE_EVIDENCE_CLAIM = NOT_TESTED
 
 See [`docs/GATE0_ROUTE_CONSOLIDATE.md`](docs/GATE0_ROUTE_CONSOLIDATE.md).
 
-## Boundary 0 — where WAIT should beat ROUTE, and vice versa
+## Boundary 0 — when another view could repay its cost
 
-The repaired experiment uses a continuous off-grid target whose overlap with the current receiver is **nonzero**.
+The repaired WAIT/ROUTE experiment gives the current receiver nonzero overlap with an off-grid target.
 
 Equal total observation budget:
 
 ```text
-WAIT    8 observations at current receiver
-ROUTE   3-unit acquisition tax + 5 observations at the better receiver
+WAIT    8 observations at the current receiver
+ROUTE   pay 3 units to acquire a better view + 5 observations there
 ```
 
-For equal Gaussian observation noise the analytic crossover is
+For equal Gaussian observation noise the predicted crossover is
 
 ```text
-|c|* = sqrt((8-3)/8)
-     = sqrt(5/8)
-     ~= 0.790569
+|c|* = sqrt(5/8) ~= 0.790569
 ```
 
-where
+where `c=<G(home),G(target)>` is the actual rendered complex Gabor overlap.
+
+So:
 
 ```text
-c = <G(home), G(target)>
+high current overlap -> WAIT
+low current overlap  -> ROUTE can repay the acquisition tax
 ```
 
-is measured from actual rendered complex Gabor templates.
-
-So this experiment predicts **before Monte Carlo**:
-
-```text
-high current overlap -> WAIT wins
-low current overlap  -> ROUTE wins
-```
-
-This is a resource boundary, not a universal ROUTE win.
-
-The ROUTE arm is intentionally oracle here. It only establishes when acquiring another view *could* repay its cost. Gate 2 must earn that view without target access.
+The ROUTE arm is oracle in Boundary 0. It establishes a resource boundary, not an active-routing win.
 
 See [`docs/BOUNDARY0_WAIT_ROUTE.md`](docs/BOUNDARY0_WAIT_ROUTE.md).
 
-## Smoke 1 — growth does not earn its keep
+## Smoke 1 — growth loses to fixed plastic capacity
 
-The first version compared a growing two-branch receiver against one moving anchor:
+The original growth result compared a two-branch growing system against one moving receiver and looked strong. The missing attacker began with **two plastic receiver anchors from the start**, second anchor random, growth disabled.
 
-```text
-route_only      acc 1.000   totalW 18060
-single_anchor   acc 1.000   totalW  3095
-grow            acc 1.000   totalW  1074
-```
-
-That made growth look valuable, but the single anchor cannot hold two views by construction.
-
-The missing attacker is **fixed capacity with plasticity**: two anchors exist from the start, the second begins at a random bank geometry, both can consolidate, and growth is disabled.
-
-Across 20 deterministic seeds the independently reproduced result is:
+Across 20 deterministic seeds:
 
 ```text
-grow       acc=1.000  totalW=1074.0   B first5=180.80  B last10=2.00
-fixedcap   acc=1.000  totalW= 613.2   B first5= 88.31  B last10=2.00
+grow       acc=1.000  totalW=1074.0
+fixedcap   acc=1.000  totalW= 613.2
 ```
 
-Identical steady state, less transient work for fixed capacity.
+Both end with the same steady-state work (`1/2/1/2` observations across the recurring A/B blocks). Growth merely pays three expensive global searches before its second branch crystallizes.
 
-The morphology break-even therefore flips sign:
+The fair morphology value therefore flips sign:
 
 ```text
-break-even vs single anchor   +2021
-break-even vs fixed capacity   -461
+vs single anchor    +2021 observation units
+vs fixed capacity    -461 observation units
 ```
 
-So the repo now records:
+The repo now records:
 
 ```text
 GROWTH_EARNS_KEEP = False
 ```
 
-This reproduces the same negative shape already recorded independently in `anttiluode/WildIdea` W3/K2, where preallocated alternative charts plus targeted probing matched predictable chart growth.
-
-The lesson is not “growth never matters.” It is narrower:
-
-> **Do not credit growth for an effect explained by already having enough plastic capacity.**
+This independently reproduces the same negative shape recorded in `anttiluode/WildIdea` W3/K2: preallocated alternatives plus probing matched or beat manufacturing new alternatives online.
 
 See [`docs/GATE1_ROUTE_GROW.md`](docs/GATE1_ROUTE_GROW.md).
 
-## Why Gabors are not allowed to be decoration
+## Gate 2 — the actual continuous rewrite
 
-The current smoke tests still use a precomputed 300x300 Gram matrix, and interpolated receiver geometry is snapped back to the nearest bank index. In that form, geometry largely acts as a metric for ordering list search.
+Gate 2 removes the bank/address-table escape hatch.
 
-That is not enough.
-
-The next gate must use **continuous receiver geometry directly**:
+Every query directly renders `G(u)` and takes a true inner product against a rendered field. There is:
 
 ```text
-receiver q
-   -> render/evaluate G(q)
-   -> true inner product with current field
+no 300 x 300 Gram lookup
+no nearest-bank snap
+no target coordinate available to the policy
+no exhaustive search
 ```
 
-No nearest-bank snap.
+The two hidden source views drift continuously in `x`, `y`, frequency, and orientation. All structured policies have the same fixed receiver capacity `K=2` and the same exact budget of **8 observations per episode**.
 
-If arbitrary coordinates or a route cache perform the same job, the Gabor story dies.
-
-## Gate 2 — budgeted continuous ROUTE
-
-This is now the first experiment allowed to carry architectural weight.
-
-Required task properties:
+Policies:
 
 ```text
-continuous off-grid hidden emitter
-strict <= 8 observations per episode
-no hidden target coordinates
-no exhaustive 300-view scan
-useful destination drifts / recurs
+address_cache    fixed two-address capacity, probe then WAIT
+hybrid_plastic   WAIT if current evidence is strong;
+                 otherwise local SPSA ROUTE and persist an improvement
+hybrid_reset     same router, but reset receiver geometry every episode
+always_route     same plastic capacity, but ROUTE every episode
+random           eight random continuous queries
+oracle           query the hidden target coordinate
 ```
 
-Required arms from the start:
+Development used seeds `0..19`, `1000..1019`, and `2000..2019`. The untouched confirmation was `3000..3019`.
+
+Confirmation:
 
 ```text
-random continuous routing
-local finite-difference / hill climbing
-learned active route policy
-fixed-capacity plastic anchors
-persistent consolidation
-simple address/cache baseline
-oracle route ceiling
+policy               acc   overlap   lateAcc   lateOv   route%  work
+---------------------------------------------------------------------
+address_cache       0.656    0.682     0.622    0.583     0.0%   8.0
+hybrid_plastic      0.674    0.691     0.661    0.644    41.2%   8.0
+hybrid_reset        0.644    0.660     0.604    0.575    46.3%   8.0
+always_route        0.569    0.589     0.566    0.583   100.0%   8.0
+random              0.507    0.153     0.500    0.148     0.0%   8.0
+oracle              1.000    1.000     1.000    1.000     0.0%   8.0
 ```
 
-The primary plot should be a **performance / observation-work frontier**, not a single accuracy number.
+Primary score is receiver-target overlap, evaluated only after the policy acts.
 
-The claim to earn is:
+Critical paired contrasts over late-block seed means:
 
-> **Persistent plasticity of an observation map can amortize repeated active sensing under a strict observation budget in a way that is not explained by fixed capacity, a simple address cache, or standard active sampling.**
+```text
+hybrid_plastic - address_cache   +0.061  CI [-0.005, +0.124]  NOT SEPARATED
+hybrid_plastic - hybrid_reset    +0.068  CI [+0.009, +0.126]  survives
+hybrid_plastic - always_route    +0.061  CI [+0.007, +0.107]  survives
+```
+
+So Gate 2 **fails the strongest baseline**.
+
+What survives is narrower:
+
+- persistent receiver geometry helped relative to running the same router from reset geometry;
+- admission mattered: routing only when evidence was weak beat routing constantly;
+- the fixed two-address cache remained statistically viable;
+- task-accuracy superiority over cache/reset was not established.
+
+See [`docs/GATE2_CONTINUOUS_ROUTE.md`](docs/GATE2_CONTINUOUS_ROUTE.md).
+
+## Boundary 1 — cache versus ROUTE changes sign
+
+Instead of tuning Gate 2's drift until ROUTE wins, Boundary 1 sweeps environmental motion while holding capacity, budget, router, admission rule, and field fixed.
+
+Late receiver-target overlap:
+
+```text
+ scale   cacheOv   routeOv     delta      95% CI
+------------------------------------------------------
+  0.00     0.999     0.831    -0.168   [-0.211,-0.124]
+  0.25     0.961     0.753    -0.209   [-0.254,-0.162]
+  0.50     0.862     0.752    -0.110   [-0.165,-0.057]
+  0.75     0.707     0.603    -0.104   [-0.245,+0.022]
+  1.00     0.551     0.650    +0.099   [+0.029,+0.172]
+  1.50     0.340     0.561    +0.221   [+0.115,+0.324]
+  2.00     0.232     0.477    +0.244   [+0.154,+0.333]
+  3.00     0.135     0.323    +0.188   [+0.089,+0.293]
+  4.00     0.090     0.266    +0.175   [+0.130,+0.222]
+```
+
+At low motion, ROUTE is actively harmful: noisy admission triggers unnecessary receiver movement. As the world moves faster, stale addresses lose observability and the sign flips around the `0.75 -> 1.0` drift-scale region.
+
+The supported statement is therefore not "plastic geometry wins":
+
+> **Receiver motion has a value region. If the current observation map remains aligned with the world, leave it alone. Once environmental change makes that map stale enough, paying to ROUTE becomes worthwhile.**
+
+See [`docs/BOUNDARY1_CACHE_ROUTE_PHASE.md`](docs/BOUNDARY1_CACHE_ROUTE_PHASE.md).
+
+## What Gabors have and have not earned
+
+Gate 2 now genuinely uses continuous rendered Gabor geometry; it is no longer decorative list ordering.
+
+But that does **not** establish that Gabors themselves are special. The current local SPSA router only needs a navigable response surface. A generic continuous sensor geometry may behave similarly.
+
+So the next attacker is not another prettier splat visualization. It is to ask whether the admission/route policy can estimate **expected value of changing the observation map** from observable evidence and generalize to fresh drift/noise regimes.
+
+If arbitrary continuous coordinates plus the same policy match the result, keep the generic active-sensing result and drop the Gabor-specific story.
 
 ## When growth may return
 
-Growth stays dead until the task contains more recurring useful views than a matched fixed-capacity system can hold.
-
-Then, with `K` receiver slots and `M >> K` recurring useful views, structural birth/death becomes a real allocation problem:
+Growth remains dead until the world contains more distinct recurring useful views than matched fixed capacity can hold:
 
 ```text
-which view deserves a slot?
-which old view should be replaced?
-when does a new branch repay its cost?
-what should prune?
+K fixed receiver slots
+M recurring useful views, M >> K
 ```
 
-Only such a world can let growth buy something preallocation cannot.
-
-## Prior art / attackers
-
-Strong neighboring ideas already include:
-
-- recurrent visual attention / learned glimpses;
-- spatial transformers;
-- deformable convolution / input-dependent sampling;
-- differentiable lifetime plasticity;
-- learned routing and sparse retrieval;
-- reservoir/liquid-state readouts;
-- simple caches of previously useful routes.
-
-See [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md).
+Only then does birth/death become a real allocation problem rather than a slower way of obtaining capacity that could have existed from the start.
 
 ## Run
 
@@ -243,8 +249,10 @@ python -m unittest discover -s tests -v
 python experiments/gate0_route_consolidate.py
 python experiments/boundary0_wait_route_crossover.py
 python experiments/gate1_route_grow.py
+python experiments/gate2_continuous_route.py
+python experiments/boundary1_cache_route_phase.py
 ```
 
 Requires Python 3.10+ and NumPy.
 
-See [`HANDOFF_CURRENT.md`](HANDOFF_CURRENT.md) for the live stopping lines and next experiment.
+See [`HANDOFF_CURRENT.md`](HANDOFF_CURRENT.md) for the live stopping lines.
