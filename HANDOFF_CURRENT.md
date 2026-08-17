@@ -4,9 +4,9 @@ Date: 2026-08-17
 
 ## One-line state
 
-> **The current result is an observer description-rate scaling receipt, not a neuron or frequency result.**
+> **The live result is an observer-resource / expressivity frontier, not a neuron, frequency, or universal O(1)-versus-O(D) scaling law.**
 
-Across preregistered 8x8 and 28x28 tests, a 32-value structured observation map stayed near its own full task accuracy at a constant **24-byte serialized map payload**, while the preregistered row-scaled PCA-16 payload grew from **576 B to 4,768 B**.
+A fixed-size parametric map has fixed description length by construction. The empirical question is whether such a small structured family remains expressive enough as the task/data become more complex, and how much map rate / logical width must be added when it does not.
 
 No novelty, neuroscience, frequency-coding, FLOP, energy, or hardware claim is currently supported.
 
@@ -23,57 +23,33 @@ Gate 7/8   mixed/pre-collapse allocation           no interior Y block
 Gate 9     PCA/DCT fixed-basis attack              PCA closes Gate-6 accuracy gap
 Gate 10    28x28 MNIST scale                       resource currencies diverge
 Gate10b/c  compact-family attacker                 nonoscillatory derivatives match Gabor
-Gate 11    literal map-bit rate/distortion         24B compact vs 576B PCA near-own-full
-Gate 11b   same codec at D=784                     24B compact vs 4768B PCA
+Gate 11    literal operator-bit rate               compact family reaches high-rate corner
+Gate 11b   same codec at D=784                     fixed family remains useful on MNIST
+Gate 12    CIFAR-10 intrinsic-complexity attack    preregistered / running
 ```
 
-## Dead / closed stories
-
-### Growth
+## Closed stories
 
 ```text
-grow       total work 1074.0
-fixedcap   total work  613.2
+online branch growth               CLOSED in current matched-capacity toy
+adaptive admission                 CLOSED
+Gabor/frequency-specific mechanism CLOSED
+interior pre-collapse Y block      NOT FOUND
+learned observer > strong PCA      NOT ESTABLISHED on Gate 9
 ```
 
-Same steady state; fixed plastic capacity wins.
+Gate 10c is the clean frequency kill:
 
 ```text
-GROWTH_EARNS_KEEP = False
+Gabor                         88.33%
+steerable Gaussian derivative 88.56%
 ```
 
-### Adaptive admission
+Same 32 map scalars, same 16 outputs, same linear head.
 
-Gate 3/4 failed robust fixed policies, including within-run nonstationarity.
+## Gate 9 — missing PCA control changed the project
 
-```text
-ADMISSION_BRANCH_STATUS = CLOSED
-```
-
-### Gabor/frequency specificity
-
-Gate 5 generic RBF reproduced the online phase. Gate 10c then matched/slightly beat Gabor on MNIST with a nonoscillatory steerable Gaussian-derivative observer at identical 32-map-scalar / 16-output / linear-head budgets:
-
-```text
-Gabor                 88.33%
-Gaussian derivative   88.56%
-```
-
-```text
-GABOR_OR_FREQUENCY_SPECIFIC_KEEP = False
-```
-
-### Interior pre-collapse Y block
-
-No interior branch/collapse allocation beat the hard endpoints.
-
-```text
-INTERIOR_Y_BLOCK_EARNS_KEEP = False
-```
-
-## Gate 9 — PCA removed the old Gate-6 story
-
-8x8 digits, same eight split IDs:
+8x8 digits:
 
 ```text
 PCA-16 + linear        95.42%
@@ -88,166 +64,172 @@ Paired PCA-minus-Gabor:
 95% bootstrap CI [-0.87,+1.15]
 ```
 
-So the original `learned vs random-frozen` Gate-6 separation does not establish that learned sensing beats a good fixed basis.
+Therefore the original learned-vs-random-frozen Gate-6 separation was not a strong fixed-sensing result.
 
-## Gate 10 — resource currencies split under scale
+## Gate 10 — currencies move in opposite directions
 
-At D=784 on frozen MNIST seeds 9100/9101:
-
-```text
-learned compact Gabor       88.33%
-PCA-16                      85.23%
-DCT-16                      83.39%
-random compact + H7         85.95%
-random compact + H48        91.58%
-full pixels + linear        90.82%
-```
-
-Observed scaling from D=64 -> D=784:
+From `D=64` to `D=784`:
 
 ```text
-nominal dense/compact map description   32x -> 392x        grows
-learned-vs-H7 accuracy gap              +5.49 -> +2.38 pp  shrinks
-dense digital MAC ratio                 ~1.92x -> ~1.086x  collapses
+nominal dense/compact description ratio  32x -> 392x        UP by construction
+learned-vs-H7 accuracy gap               +5.49 -> +2.38 pp  DOWN
+dense digital MAC ratio                  ~1.92x -> ~1.086x  DOWN toward 1
+logical egress                            16 -> 16            FLAT
 ```
 
-No single efficiency factor is valid.
+This worked counterexample is important: `N times more efficient` is meaningless unless the resource currency is named.
 
-## Gate 11 — literal map bits on fresh 8x8 splits
+## Gate 11 / 11b — literal operator bits
 
-Fresh split IDs `7200..7207`; post-training fixed-rate quantization; same FP32 680-byte linear head; no per-rate retraining.
+Post-training map quantization only; decoder frozen; actual bit packing.
 
-Full means:
-
-```text
-Gabor                 94.13%
-Gaussian derivative   94.03%
-PCA-16                93.92%
-DCT-16                90.73%
-```
-
-Smallest map payload within one percentage point of own full precision:
-
-```text
-Gabor                  24 B   6 bits/value
-Gaussian derivative    24 B   6 bits/value
-PCA                    576 B   4 bits/value + row scales
-DCT                      0 B   algorithmic
-```
-
-Map-only ratio:
-
-```text
-576 / 24 = 24x
-```
-
-Total observer+head state:
-
-```text
-compact   704 B
-PCA      1256 B
-ratio     1.78x
-```
-
-DCT owns the zero-map/lower-accuracy corner.
-
-Compact geometry is more brittle per coordinate at 2-3 bits; its win comes from having few high-leverage coordinates, not robust coordinates.
-
-## Gate 11b — the description-rate gap grows at D=784
-
-Fresh MNIST seeds `9200/9201`, same fixed-rate codecs.
-
-Full means:
-
-```text
-Gabor                 88.99%
-Gaussian derivative   88.39%
-PCA-16                86.03%
-DCT-16                83.94%
-```
-
-Within one point of own full precision:
-
-```text
-Gabor                  24 B   88.90%
-Gaussian derivative    24 B   88.10%
-PCA                   4768 B   85.78%
-DCT                      0 B   83.94%
-```
-
-Cross-scale comparison:
+Diagnostic `within 1 pp of own full precision`:
 
 ```text
                          D=64        D=784
-------------------------------------------------
-compact useful map       24 B         24 B
-PCA useful map          576 B       4768 B
-map-only ratio           24x        198.7x
-compact+head            704 B        704 B
-PCA+head               1256 B       5448 B
-total-state ratio       1.78x        7.74x
+compact structured       24 B         24 B
+PCA                     576 B       4768 B
+DCT                       0 B          0 B
 ```
 
-Input dimension increased `12.25x`. Compact useful payload stayed constant. PCA payload grew `8.28x` even though its useful precision dropped from 4 to 3 bits/coefficient.
+Compact coordinates are fragile at 2-3 bits. Their advantage comes from **few high-leverage values**, not robust individual values.
 
-This is the strongest current result.
+The old wording that the `rate law scales with D` is too strong. The map-only ratio grows arithmetically because the compact family has fixed parameter count while PCA has `M*D` coefficients.
 
-Supported statement:
+The empirical receipt is narrower:
 
-> **Across these preregistered digit experiments, a 32-value structured observation map retained near-full task accuracy at a constant 24-byte serialized map payload when input dimension increased from 64 to 784, while the fixed-rate PCA-16 payload grew from 576 to 4,768 bytes.**
+> **On both digit tasks, the same 32-value structured family remained expressive enough to retain useful task performance at a 24-byte map payload.**
 
-Do not call this universal yet: only two input dimensions; MNIST n=2; fixed scalar codecs; digit tasks.
+That could have failed at higher resolution, but MNIST is still the same centered stroke task. Gate 12 attacks the actual expressivity question.
 
-## SpectralNeuron relation
+## Gate 11 reporting correction
 
-`anttiluode/SpectralNeuron` measures the adjacent physical-channel resource.
+`within 1 point of each family's own ceiling` is not iso-accuracy.
+
+Keep it as a diagnostic, not the headline.
+
+From Gate 12 onward:
+
+```text
+common validation-defined task-error target
+validation-only configuration selection
+held-out test reporting
+```
+
+and always report separately:
+
+```text
+map bytes
+head / decoder bytes
+total explicit state
+logical egress width
+projection compute/materialization cost
+```
+
+## Gate 12 — CIFAR-10 complexity attack
+
+Preregistered before results in `docs/GATE12_PREREG_CIFAR_COMPLEXITY.md`.
+
+Dataset:
+
+```text
+CIFAR-10 -> fixed luminance
+32x32, D=1024
+12k train / 3k validation / 10k standard test
+fresh seeds 9300, 9301
+```
+
+Capacity sweep:
+
+```text
+M = 16, 32, 64, 128
+structured nonoscillatory derivative family
+PCA-M
+DCT-M
+full-pixel linear reference
+```
+
+Common targets:
+
+```text
+T95 = 95% of full-pixel validation accuracy
+T90 = 90% of full-pixel validation accuracy
+```
+
+The load-bearing old setting is explicitly attacked:
+
+```text
+M=16
+32 geometry values
+6 bits/value
+24 map bytes
+```
+
+Possible outcomes:
+
+```text
+24 B still reaches T95
+    -> stronger-than-expected expressivity result
+
+compact needs larger M / more bytes
+    -> observer cost tracks task complexity; report required resource vector
+
+nothing through M=128 reaches T90
+    -> current structured family fails expressivity; record kill
+
+PCA/DCT dominates at common target
+    -> compact description loses on this task
+```
+
+Do not change M, codecs, targets or grayscale preprocessing after results.
+
+## Prior-art boundary
+
+Broad ingredients are occupied:
+
+```text
+learned measurement matrices       old
+structured alternatives to dense   old (Butterfly / Monarch / related)
+compact parameterized front ends   old
+post-training quantization          old
+bit-precision scaling laws          old
+```
+
+See `docs/PRIOR_ART_OBSERVER_RATE.md`.
+
+The candidate contribution, if anything survives, is a **measurement protocol / worked Pareto frontier**, not a new structured-matrix idea.
+
+## SpectralNeuron / shared-carrier boundary tightened again
 
 Common pipeline:
 
 ```text
-x -> C_theta -> logical consequences z
-  -> shared physical channel H
-  -> receiver/demultiplexer R -> z_hat
-  -> decoder g_phi -> task
+x -> observation map C_theta -> logical z
+  -> physical/shared channel H
+  -> receiver/demux -> z_hat
+  -> decoder -> task
 ```
 
-SplatNeuron Gates 9-11b now measure the **description-rate / quality cost of C_theta** while mostly assuming an ideal logical channel.
+SpectralNeuron is relevant because it makes physical crosstalk visible, but FDM/MIMO itself is standard.
 
-SpectralNeuron demonstrates that selective logical consequences sharing one physical waveform have finite crosstalk: roughly `3.1x` self/crosstalk separation for its resonant forks versus `1.0x` for a total-energy bucket.
+More importantly, the broader coupling `learn task-relevant features that survive a noisy bandwidth-limited channel` is already heavily occupied by **task-oriented / semantic communications and deep joint source-channel coding**.
 
-This is standard FDM territory, but it supplies the missing physical-interference axis.
+So do **not** build a bridge merely to show that task-shaped features survive a bad channel.
 
-The common abstraction is:
+A bridge only earns work if there is a sharper resource-accounting question not already answered by that literature, with generic linear/code-division controls from the start.
 
-```text
-selectivity
-+
-observer description rate
-+
-logical width
-+
-physical carrier / crosstalk
-+
-decoder cost
-```
+## Stop lines
 
-not frequency-coded thought.
+- Do not reopen growth/admission/frequency stories.
+- Do not quote parameter-count ratios as FLOP ratios.
+- Do not call fixed-P vs dense-P scaling a discovery.
+- Do not call own-ceiling rate comparisons iso-accuracy.
+- Do not call operator bytes materialized-filter RAM.
+- Do not retune Gate-11 codecs on the same digit data.
+- Do not build a Spectral bridge before checking task-oriented JSCC / semantic-communications prior art.
 
-## Current stopping lines
+## Next legitimate work
 
-- Growth closed for capacity-matched two-view worlds.
-- Admission branch closed.
-- Gabor/frequency-specific story closed.
-- No interior Y block found.
-- PCA closes the 8x8 learned-vs-good-fixed accuracy story.
-- Do not quote parameter ratios as FLOP ratios.
-- Do not call 16 logical outputs an egress win; all constrained arms use the same logical width.
-- Do not call map-description bytes materialized-filter RAM; a dense digital implementation may still expand structured filters.
-- Do not tune Gate-11 codecs on the same data after seeing the result.
-
-## Next allowed work
-
-Only two directions currently earn more compute:
-
-1. **Replication/generalization of the observer rate law** — more fresh seeds or a non-digit dataset with codecs frozen.
-2. **SpectralNeuron bridge** — force logical consequences through a controlled shared physical channel and measure task distortion versus carrier width/noise/crosstalk, with a generic mixing baseline so frequency cannot win by narrative.
+1. Finish Gate 12 exactly as preregistered.
+2. If it survives, replicate on another genuinely different modality/task or formalize the multi-currency frontier.
+3. Reassess the shared-carrier bridge only after the semantic-communications prior-art boundary is explicit.
