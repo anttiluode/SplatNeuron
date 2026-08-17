@@ -4,9 +4,11 @@ Date: 2026-08-17
 
 ## One-line state
 
-> **The biology-shaped online-plasticity ideas mostly died. The live object is now an observer resource frontier: task quality versus observation-map description, logical width, physical-channel interference, and decoder cost.**
+> **The current result is an observer description-rate scaling receipt, not a neuron or frequency result.**
 
-No novelty, neuroscience, frequency-coding, or hardware claim is currently supported.
+Across preregistered 8x8 and 28x28 tests, a 32-value structured observation map stayed near its own full task accuracy at a constant **24-byte serialized map payload**, while the preregistered row-scaled PCA-16 payload grew from **576 B to 4,768 B**.
+
+No novelty, neuroscience, frequency-coding, FLOP, energy, or hardware claim is currently supported.
 
 ## Ledger
 
@@ -19,55 +21,59 @@ Gate 5     Gabor-specific ROUTE                    generic RBF reproduces phase
 Gate 6     learned vs random-frozen receiver       large small-budget gap
 Gate 7/8   mixed/pre-collapse allocation           no interior Y block
 Gate 9     PCA/DCT fixed-basis attack              PCA closes Gate-6 accuracy gap
-Gate 10    28x28 MNIST scale                       description and compute laws diverge
-Gate10b/c  matched compact family attack           Gaussian derivatives match Gabor
+Gate 10    28x28 MNIST scale                       resource currencies diverge
+Gate10b/c  compact-family attacker                 nonoscillatory derivatives match Gabor
+Gate 11    literal map-bit rate/distortion         24B compact vs 576B PCA near-own-full
+Gate 11b   same codec at D=784                     24B compact vs 4768B PCA
 ```
 
-## Closed branches
+## Dead / closed stories
 
 ### Growth
-
-Two preallocated plastic anchors beat online branch growth in the recurring A/B toy:
 
 ```text
 grow       total work 1074.0
 fixedcap   total work  613.2
 ```
 
-Same final accuracy and steady state. `GROWTH_EARNS_KEEP = False`.
+Same steady state; fixed plastic capacity wins.
 
-Do not reopen growth unless useful recurring views greatly exceed fixed capacity and fixed-capacity replacement/cache policies are included from the start.
+```text
+GROWTH_EARNS_KEEP = False
+```
 
 ### Adaptive admission
 
-Gate 3 and Gate 4 failed robust fixed admission policies, including a within-run nonstationary sequence.
+Gate 3/4 failed robust fixed policies, including within-run nonstationarity.
 
 ```text
 ADMISSION_BRANCH_STATUS = CLOSED
 ```
 
-### Gabor/frequency-specific online ROUTE
+### Gabor/frequency specificity
 
-A generic smooth RBF observation manifold reproduced the cache<->ROUTE phase.
-
-```text
-GABOR_SPECIFIC_ROUTE_KEEP = False
-```
-
-## Gate 6 — useful result, weak baseline revealed
-
-8x8 sklearn digits, fixed 16-real-value egress:
+Gate 5 generic RBF reproduced the online phase. Gate 10c then matched/slightly beat Gabor on MNIST with a nonoscillatory steerable Gaussian-derivative observer at identical 32-map-scalar / 16-output / linear-head budgets:
 
 ```text
-learned Gabor + linear              202 p   95.24%
-random-frozen same Gabor + H7       199 p   89.76%
+Gabor                 88.33%
+Gaussian derivative   88.56%
 ```
 
-A larger H48 decoder behind the same fixed features eventually approached the learned map, so no information-ceiling claim survived.
+```text
+GABOR_OR_FREQUENCY_SPECIFIC_KEEP = False
+```
 
-## Gate 9 — PCA is the load-bearing missing control
+### Interior pre-collapse Y block
 
-Same eight split IDs:
+No interior branch/collapse allocation beat the hard endpoints.
+
+```text
+INTERIOR_Y_BLOCK_EARNS_KEEP = False
+```
+
+## Gate 9 — PCA removed the old Gate-6 story
+
+8x8 digits, same eight split IDs:
 
 ```text
 PCA-16 + linear        95.42%
@@ -82,144 +88,141 @@ Paired PCA-minus-Gabor:
 95% bootstrap CI [-0.87,+1.15]
 ```
 
-Therefore PCA and learned Gabor are not separated. The original +5.49 point story was substantially “random frozen Gabors are a poor 16-channel basis.”
+So the original `learned vs random-frozen` Gate-6 separation does not establish that learned sensing beats a good fixed basis.
 
-Do not center the repo on “learning what to observe beats fixed sensing.”
+## Gate 10 — resource currencies split under scale
 
-## The surviving axis after Gate 9: compact map description
-
-With input dimension `D` and logical output width `M=16`:
+At D=784 on frozen MNIST seeds 9100/9101:
 
 ```text
-dense linear map          16D coefficients
-compact 8-branch map      32 geometry scalars
-map-only ratio            D/2
+learned compact Gabor       88.33%
+PCA-16                      85.23%
+DCT-16                      83.39%
+random compact + H7         85.95%
+random compact + H48        91.58%
+full pixels + linear        90.82%
 ```
+
+Observed scaling from D=64 -> D=784:
 
 ```text
-D=64      ratio 32x
-D=784     ratio 392x
+nominal dense/compact map description   32x -> 392x        grows
+learned-vs-H7 accuracy gap              +5.49 -> +2.38 pp  shrinks
+dense digital MAC ratio                 ~1.92x -> ~1.086x  collapses
 ```
 
-This is only nominal description complexity until literal bit-rate is measured.
+No single efficiency factor is valid.
 
-## Gate 10 — MNIST scale splits the currencies
+## Gate 11 — literal map bits on fresh 8x8 splits
 
-Frozen real-MNIST protocol:
+Fresh split IDs `7200..7207`; post-training fixed-rate quantization; same FP32 680-byte linear head; no per-rate retraining.
+
+Full means:
 
 ```text
-D                  784
-train/val/test      6000 / 1000 / 5000
-seeds               9100, 9101
-logical outputs     16 real values
-compact map         32 geometry scalars
+Gabor                 94.13%
+Gaussian derivative   94.03%
+PCA-16                93.92%
+DCT-16                90.73%
 ```
 
-Results:
+Smallest map payload within one percentage point of own full precision:
 
 ```text
-                           seed9100   seed9101   mean
------------------------------------------------------
-learned compact Gabor       88.66%      88.00%   88.33%
-PCA-16                      85.32%      85.14%   85.23%
-DCT-16                      83.46%      83.32%   83.39%
-random Gabor + H7           86.30%      85.60%   85.95%
-random Gabor + H48          91.98%      91.18%   91.58%
-full pixels + linear        90.54%      91.10%   90.82%
+Gabor                  24 B   6 bits/value
+Gaussian derivative    24 B   6 bits/value
+PCA                    576 B   4 bits/value + row scales
+DCT                      0 B   algorithmic
 ```
 
-Only two seeds: treat as a cross-scale receipt, not a general statistical law.
-
-Observed scaling:
+Map-only ratio:
 
 ```text
-map-description ratio              32x -> 392x        grows
-learned-vs-H7 accuracy gap         +5.49 -> +2.38 pp  shrinks
-H48 vs learned compact             -0.94 -> +3.25 pp  decoder-heavy wins at scale
-dense digital compute ratio        ~1.92x -> ~1.086x  collapses toward 1
+576 / 24 = 24x
 ```
 
-At D=784:
+Total observer+head state:
 
 ```text
-compact geometry + linear head            808 B FP32 state
-PCA matrix + mean + linear head          53992 B
-logical egress                            64 B/sample for both
-materialized projection                   12544 MACs for both
+compact   704 B
+PCA      1256 B
+ratio     1.78x
 ```
 
-So:
+DCT owns the zero-map/lower-accuracy corner.
 
-> **Description compression grows with input dimension, while ordinary dense digital compute advantage and the original receiver-vs-decoder allocation advantage do not.**
+Compact geometry is more brittle per coordinate at 2-3 bits; its win comes from having few high-leverage coordinates, not robust coordinates.
 
-There is no single “efficiency gain.”
+## Gate 11b — the description-rate gap grows at D=784
 
-## Gate 10b/c — frequency-specific scale story dies
+Fresh MNIST seeds `9200/9201`, same fixed-rate codecs.
 
-Simple compact nonoscillatory families:
+Full means:
 
 ```text
-points                       79.84%
-Gaussian pair best           85.27%
-Gabor reference              88.33%
+Gabor                 88.99%
+Gaussian derivative   88.39%
+PCA-16                86.03%
+DCT-16                83.94%
 ```
 
-A stronger matched nonoscillatory selective family closes the gap completely:
+Within one point of own full precision:
 
 ```text
-8 steerable Gaussian-derivative branches
-(x,y,scale,orientation)      32 map scalars
-first + second derivatives   16 outputs
-same linear head
-
-seed9100                     88.60%
-seed9101                     88.52%
-mean                         88.56%
+Gabor                  24 B   88.90%
+Gaussian derivative    24 B   88.10%
+PCA                   4768 B   85.78%
+DCT                      0 B   83.94%
 ```
 
-Versus Gabor `88.33%`.
-
-The tiny difference is not a superiority result. It is a clean falsification:
+Cross-scale comparison:
 
 ```text
-GABOR_OR_FREQUENCY_SPECIFIC_KEEP = False
+                         D=64        D=784
+------------------------------------------------
+compact useful map       24 B         24 B
+PCA useful map          576 B       4768 B
+map-only ratio           24x        198.7x
+compact+head            704 B        704 B
+PCA+head               1256 B       5448 B
+total-state ratio       1.78x        7.74x
 ```
 
-What survives is **compact structured localized selectivity**, not oscillation.
+Input dimension increased `12.25x`. Compact useful payload stayed constant. PCA payload grew `8.28x` even though its useful precision dropped from 4 to 3 bits/coefficient.
 
-See `docs/GATE10BC_COMPACT_FAMILY_ATTACKERS.md`.
+This is the strongest current result.
+
+Supported statement:
+
+> **Across these preregistered digit experiments, a 32-value structured observation map retained near-full task accuracy at a constant 24-byte serialized map payload when input dimension increased from 64 to 784, while the fixed-rate PCA-16 payload grew from 576 to 4,768 bytes.**
+
+Do not call this universal yet: only two input dimensions; MNIST n=2; fixed scalar codecs; digit tasks.
 
 ## SpectralNeuron relation
 
-`anttiluode/SpectralNeuron` remains directly related, but not because frequency is the general substrate.
-
-Its bucket collapses a shared waveform to total power; its resonant forks preserve selective channels. Three channels sharing one noisy wire achieved about:
-
-```text
-fork self/crosstalk ratio    3.1x
-bucket ratio                 1.0x
-```
-
-with finite off-diagonal leakage.
-
-That measures a resource SplatNeuron mostly idealized away: **logical consequences interfere when they share a physical carrier.**
+`anttiluode/SpectralNeuron` measures the adjacent physical-channel resource.
 
 Common pipeline:
 
 ```text
-x -> observation map C_theta -> logical z
-  -> shared channel H -> receiver R -> z_hat
+x -> C_theta -> logical consequences z
+  -> shared physical channel H
+  -> receiver/demultiplexer R -> z_hat
   -> decoder g_phi -> task
 ```
 
-SplatNeuron has mostly studied `C_theta` / `g_phi`; SpectralNeuron probes `H/R`.
+SplatNeuron Gates 9-11b now measure the **description-rate / quality cost of C_theta** while mostly assuming an ideal logical channel.
 
-Common abstraction:
+SpectralNeuron demonstrates that selective logical consequences sharing one physical waveform have finite crosstalk: roughly `3.1x` self/crosstalk separation for its resonant forks versus `1.0x` for a total-energy bucket.
+
+This is standard FDM territory, but it supplies the missing physical-interference axis.
+
+The common abstraction is:
 
 ```text
 selectivity
 +
-map-description cost
+observer description rate
 +
 logical width
 +
@@ -230,66 +233,21 @@ decoder cost
 
 not frequency-coded thought.
 
-## Gate 8 remains a null
+## Current stopping lines
 
-At fixed 16-wide carrier and roughly ~750 trainable parameters, private Gabor branches plus local collapse produced no interior winner:
-
-```text
-B8 direct / H27            96.11%
-B10 collapse / H14         94.95%
-B12 collapse / H11         94.63%
-B14 collapse / H8          93.84%
-B16 collapse / linear      95.46%
-```
-
-```text
-INTERIOR_Y_BLOCK_EARNS_KEEP = False
-```
-
-Do not architecture-search a reducer toward a win.
-
-## Current decisive next gate: map rate-distortion
-
-`32 scalars versus 12,544 coefficients` is still a proxy, not literal description length.
-
-Both compact geometry and PCA can be quantized/compressed. DCT is largely algorithmic.
-
-Gate 11 should measure:
-
-```text
-bits needed to serialize observation map C
-        versus
-task accuracy after quantization/compression
-```
-
-At minimum compare:
-
-```text
-compact steerable derivative or Gabor map
-PCA-16
-DCT / algorithmic anchor
-```
-
-and report separately:
-
-```text
-map-description bits
-materialized map storage
-projection compute
-logical egress bytes
-physical-channel/crosstalk cost if any
-decoder state/compute
-```
-
-This is a rate-distortion question about the observer, not another neuron-shape contest.
-
-## Stop lines
-
+- Growth closed for capacity-matched two-view worlds.
 - Admission branch closed.
-- Growth branch closed for capacity-matched two-view worlds.
-- Gabor/frequency-specific claim closed by Gaussian-derivative attacker.
-- No interior pre-collapse Y block found.
-- Gate 6 no longer establishes learned sensing versus a good fixed basis; PCA closes it.
-- Do not quote trainable-parameter ratios as FLOP ratios.
-- Do not call 16-channel width an egress win; every constrained arm emits the same 64 FP32 bytes.
-- Do not call float-count ratio a description-bit law until Gate 11 quantizes/serializes the maps.
+- Gabor/frequency-specific story closed.
+- No interior Y block found.
+- PCA closes the 8x8 learned-vs-good-fixed accuracy story.
+- Do not quote parameter ratios as FLOP ratios.
+- Do not call 16 logical outputs an egress win; all constrained arms use the same logical width.
+- Do not call map-description bytes materialized-filter RAM; a dense digital implementation may still expand structured filters.
+- Do not tune Gate-11 codecs on the same data after seeing the result.
+
+## Next allowed work
+
+Only two directions currently earn more compute:
+
+1. **Replication/generalization of the observer rate law** — more fresh seeds or a non-digit dataset with codecs frozen.
+2. **SpectralNeuron bridge** — force logical consequences through a controlled shared physical channel and measure task distortion versus carrier width/noise/crosstalk, with a generic mixing baseline so frequency cannot win by narrative.
