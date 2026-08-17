@@ -1,12 +1,7 @@
 name: Gate 11b MNIST map rate
 
 on:
-  push:
-    branches: ["agent/route-grow"]
-    paths:
-      - ".github/workflows/gate11b_mnist_rate.yml"
-      - "experiments/gate11b_mnist_map_rate.py"
-      - "docs/GATE11B_PREREG_MNIST_RATE.md"
+  workflow_dispatch:
 
 jobs:
   rate:
