@@ -1,0 +1,17 @@
+name: Gate 11 map rate-distortion
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+      - run: python -m pip install -e . scikit-learn
+      - run: python experiments/gate11_map_rate_distortion.py --full

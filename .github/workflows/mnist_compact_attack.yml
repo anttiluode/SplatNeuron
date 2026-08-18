@@ -1,0 +1,17 @@
+name: MNIST compact-map attackers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  compact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+      - run: python -m pip install -e . scikit-learn
+      - run: python experiments/gate10c_gaussian_derivative.py --download

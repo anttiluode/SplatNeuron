@@ -1,0 +1,30 @@
+name: Gate 13 D-K-structure full surface
+
+on:
+  workflow_dispatch:
+
+jobs:
+  surface:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        world-seed: [13100, 13101, 13102]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+      - run: python -m pip install -e .
+      - run: python -m py_compile experiments/gate13_dks_preflight.py experiments/gate13_dks_exchange_surface.py
+      - run: >-
+          python experiments/gate13_dks_exchange_surface.py
+          --full
+          --world-seed ${{ matrix.world-seed }}
+          --output gate13_seed_${{ matrix.world-seed }}.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gate13-seed-${{ matrix.world-seed }}
+          path: gate13_seed_${{ matrix.world-seed }}.json

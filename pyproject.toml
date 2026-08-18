@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "splatneuron"
+version = "0.1.0"
+description = "Research prototype for learned and plastic observation geometry"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.23"]
+
+[project.optional-dependencies]
+gate6 = ["torch>=2.0", "scikit-learn>=1.3"]
+scale = ["torch>=2.0", "torchvision>=0.15", "scikit-learn>=1.3"]
+
+[tool.setuptools.packages.find]
+include = ["splatneuron*"]
