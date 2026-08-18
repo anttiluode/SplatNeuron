@@ -1,0 +1,23 @@
+name: Gate 13 D-K-structure preflight
+
+on:
+  push:
+    branches: ["agent/route-grow"]
+    paths:
+      - ".github/workflows/gate13_dks_preflight.yml"
+      - "experiments/gate13_dks_preflight.py"
+      - "docs/GATE13_PREREG_DKS_EXCHANGE_SURFACE.md"
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+      - run: python -m pip install -e .
+      - run: python -m py_compile experiments/gate13_dks_preflight.py
+      - run: python experiments/gate13_dks_preflight.py
