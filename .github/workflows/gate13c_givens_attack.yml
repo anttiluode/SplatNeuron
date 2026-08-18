@@ -1,0 +1,32 @@
+name: Gate 13c generic Givens attacker
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/gate13c_givens_attack.yml"
+      - "experiments/gate13c_givens_attack.py"
+      - "experiments/gate13b_index_only_attackers.py"
+      - "experiments/gate13_dks_preflight.py"
+      - "docs/GATE13C_PREREG_GIVENS_ATTACK.md"
+
+jobs:
+  attack:
+    strategy:
+      fail-fast: false
+      matrix:
+        world_seed: [13100, 13101, 13102]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+      - run: python -m pip install -e .
+      - run: python -m py_compile experiments/gate13c_givens_attack.py
+      - run: python experiments/gate13c_givens_attack.py --world-seed ${{ matrix.world_seed }} --output gate13c_seed_${{ matrix.world_seed }}.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gate13c-seed-${{ matrix.world_seed }}
+          path: gate13c_seed_${{ matrix.world_seed }}.json
