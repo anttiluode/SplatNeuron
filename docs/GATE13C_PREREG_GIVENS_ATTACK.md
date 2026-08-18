@@ -87,16 +87,18 @@ This family has no positions, scales, orientations, frequencies, locality coordi
 For each `(D,seed,M,round_count)`:
 
 ```text
-3 restarts
-220 optimization steps / restart
-same BCE task objective style as Gate 13
-same training examples
-same validation-only restart selection
+optimizer      Adam
+learning rate  0.03
+batch size     1024
+restarts       3
+steps/restart  220
 ```
+
+Use the same BCE task objective style as Gate 13 and the same training examples. Restart selection is validation-only.
 
 The transient training head is discarded. The final output is evaluated with the same ridge linear decoder convention used by Gate 13.
 
-Report restart validation accuracies and map-optimization step count.
+Report restart validation accuracies and `660` map-optimization steps per trained configuration.
 
 ## Quantization and map payload
 
