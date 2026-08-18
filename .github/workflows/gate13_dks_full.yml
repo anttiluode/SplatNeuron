@@ -1,10 +1,7 @@
 name: Gate 13 D-K-structure full surface
 
 on:
-  pull_request:
-    branches: ["main"]
-    paths:
-      - ".github/workflows/gate13_dks_full.yml"
+  workflow_dispatch:
 
 jobs:
   surface:
