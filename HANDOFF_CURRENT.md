@@ -1,235 +1,277 @@
 # SplatNeuron — current handoff
 
-Date: 2026-08-17
+Date: 2026-08-18
 
 ## One-line state
 
-> **The live result is an observer-resource / expressivity frontier, not a neuron, frequency, or universal O(1)-versus-O(D) scaling law.**
+> **The live result is a conditional description-complexity frontier for observation maps: when task structure is spatially aligned, a compact local sensing vocabulary can spend task-specific configuration bits to reduce repeated logical measurement width; that advantage disappears as alignment/complexity worsen.**
 
-A fixed-size parametric map has fixed description length by construction. The empirical question is whether such a small structured family remains expressive enough as the task/data become more complex, and how much map rate / logical width must be added when it does not.
+This is **not** a neuron result, not a frequency result, not evidence for dendritic growth, and not a new general sensing theorem.
 
-No novelty, neuroscience, frequency-coding, FLOP, energy, or hardware claim is currently supported.
-
-## Ledger
+## Current ledger
 
 ```text
 Smoke 0    WAIT/ROUTE plumbing                     original WAIT null constructed
 Smoke 1    online branch growth                    fixed plastic capacity wins
 Gate 2     continuous fixed-capacity ROUTE         address cache survives
 Gate 3/4   adaptive admission                      strong fixed policies survive
-Gate 5     Gabor-specific ROUTE                    generic RBF reproduces phase
-Gate 6     learned vs random-frozen receiver       large small-budget gap
+Gate 5     Gabor-specific ROUTE                    generic smooth manifold reproduces phase
+Gate 6     learned vs random-frozen receiver       large weak-baseline gap
 Gate 7/8   mixed/pre-collapse allocation           no interior Y block
-Gate 9     PCA/DCT fixed-basis attack              PCA closes Gate-6 accuracy gap
-Gate 10    28x28 MNIST scale                       resource currencies diverge
-Gate10b/c  compact-family attacker                 nonoscillatory derivatives match Gabor
-Gate 11    literal operator-bit rate               compact family reaches high-rate corner
-Gate 11b   same codec at D=784                     fixed family remains useful on MNIST
-Gate 12    CIFAR-10 intrinsic-complexity attack    preregistered / running
+Gate 9     PCA/DCT fixed-basis attack              PCA closes Gate-6 headline
+Gate 10    MNIST scale                             resource currencies diverge
+Gate10c    Gabor/frequency specificity             Gaussian derivatives match Gabor
+Gate 11    literal operator-map bits               compact family useful at 24 B on digits
+Gate 11b   D=784 digit replication                 fixed family remains expressive
+Gate 12    CIFAR complexity attack                 useful but not controlled K
+Gate 13    D x K x structure factorial             conditional width/configuration frontier
+Gate 13b   supervised index-only DCT attack        does not reduce K8 local M=48 endpoint
+Gate 13c   generic learned Givens circuit attack   9/9 primary cells remain below T95
 ```
 
 ## Closed stories
 
 ```text
-online branch growth               CLOSED in current matched-capacity toy
+online branch growth               CLOSED in matched-capacity toy
 adaptive admission                 CLOSED
 Gabor/frequency-specific mechanism CLOSED
 interior pre-collapse Y block      NOT FOUND
 learned observer > strong PCA      NOT ESTABLISHED on Gate 9
+universal geometry advantage       FALSE; dense rotation kills it
 ```
 
-Gate 10c is the clean frequency kill:
+Do not reopen these without a genuinely new attacker/task.
+
+## Gate 13 — current central result
+
+Synthetic factorial:
 
 ```text
-Gabor                         88.33%
-steerable Gaussian derivative 88.56%
+D          1024, 2304, 4096
+K          2, 4, 8, 16 task-relevant latent factors
+structure  local, mixed, dense
+nuisance   32 independent latent factors
+tasks      32 binary tasks
+seeds      13100, 13101, 13102
+M          8,16,24,32,48,64 logical measurements
 ```
 
-Same 32 map scalars, same 16 outputs, same linear head.
+The worlds are orthonormalized so latent rank/SNR are held fixed while alignment of task-relevant structure to the local observation family changes.
 
-## Gate 9 — missing PCA control changed the project
-
-8x8 digits:
+Primary T95 width-trade counts across 36 cells per structure:
 
 ```text
-PCA-16 + linear        95.42%
-learned Gabor          95.24%
-DCT-16 + linear        92.85%
+local   28 / 36
+mixed   13 / 36
+dense    3 / 36
 ```
 
-Paired PCA-minus-Gabor:
+For local `K=2,4,8`, the trade replicates in:
 
 ```text
-+0.17 percentage points
-95% bootstrap CI [-0.87,+1.15]
+27 / 27 cells
 ```
 
-Therefore the original learned-vs-random-frozen Gate-6 separation was not a strong fixed-sensing result.
-
-## Gate 10 — currencies move in opposite directions
-
-From `D=64` to `D=784`:
+Median T95 local frontier:
 
 ```text
-nominal dense/compact description ratio  32x -> 392x        UP by construction
-learned-vs-H7 accuracy gap               +5.49 -> +2.38 pp  DOWN
-dense digital MAC ratio                  ~1.92x -> ~1.086x  DOWN toward 1
-logical egress                            16 -> 16            FLAT
+K      learned local map              zero/near-zero-map endpoint
+2      M=8    ~16 B                   M=32
+4      M=24   ~48 B                   M=32
+8      M=32   ~96 B                   M=48
+16     M=48  ~144 B                   M=48
 ```
 
-This worked counterexample is important: `N times more efficient` is meaningless unless the resource currency is named.
+Representative K=8 statement:
 
-## Gate 11 / 11b — literal operator bits
+> **roughly 48–96 task-specific map bytes buy a 48 -> 24–32 logical-width reduction in the aligned world.**
 
-Post-training map quantization only; decoder frozen; actual bit packing.
+At K=16 the benefit is essentially exhausted. Under dense rotation it largely disappears.
 
-Diagnostic `within 1 pp of own full precision`:
+This is the key interaction. `geometry wins on a generator built from local structure` would be trivial; `geometry wins locally and loses after a controlled dense rotation of the same latent task` is the useful receipt.
+
+## Gate 13 preflight / theory guards
+
+- Signal-support fraction remains approximately constant as D changes within each structure regime.
+- Task bank has full rank K.
+- Seeded random projection behavior matches the isotropic-subspace prediction closely.
+- The simple random theory explains why `M=48` recovers the K<=16 latent span.
+- DCT/random own the zero/near-zero-task-specific-bit edge.
+- Learned geometry pays real discovery debt: 3 restarts x 220 steps per trained configuration.
+
+Do not infer science from workflow success; green CI only says the registered computation reproduced.
+
+## Gate 13b — supervised shared-dictionary attack
+
+Attackers:
 
 ```text
-                         D=64        D=784
-compact structured       24 B         24 B
-PCA                     576 B       4768 B
-DCT                       0 B          0 B
+selected DCT
+selected fixed-sign-DCT
 ```
 
-Compact coordinates are fragile at 2-3 bits. Their advantage comes from **few high-leverage values**, not robust individual values.
-
-The old wording that the `rate law scales with D` is too strong. The map-only ratio grows arithmetically because the compact family has fixed parameter count while PCA has `M*D` coefficients.
-
-The empirical receipt is narrower:
-
-> **On both digit tasks, the same 32-value structured family remained expressive enough to retain useful task performance at a 24-byte map payload.**
-
-That could have failed at higher resolution, but MNIST is still the same centered stroke task. Gate 12 attacks the actual expressivity question.
-
-## Gate 11 reporting correction
-
-`within 1 point of each family's own ceiling` is not iso-accuracy.
-
-Keep it as a diagnostic, not the headline.
-
-From Gate 12 onward:
+Only subset indices are task-specific; charge:
 
 ```text
-common validation-defined task-error target
-validation-only configuration selection
-held-out test reporting
+ceil(log2 binom(D,M)) bits
 ```
 
-and always report separately:
+Frozen K=8/local/T95 result:
 
 ```text
-map bytes
-head / decoder bytes
-total explicit state
-logical egress width
-projection compute/materialization cost
+selected DCT still needs M=48 in 9/9 cells
 ```
 
-## Gate 12 — CIFAR-10 complexity attack
-
-Preregistered before results in `docs/GATE12_PREREG_CIFAR_COMPLEXITY.md`.
-
-Dataset:
+Important accounting correction:
 
 ```text
-CIFAR-10 -> fixed luminance
-32x32, D=1024
-12k train / 3k validation / 10k standard test
-fresh seeds 9300, 9301
+fixed DCT prefix       M=48   L_map=0 B       reaches T95
+selected DCT           M=48   L_map=35–47 B   reaches T95
 ```
 
-Capacity sweep:
+Therefore selected DCT is globally dominated by the original zero-byte DCT in the primary cells. It does **not** add a new frontier point and does not erase the geometry width reduction.
+
+Pairwise-vs-geometry categories from the preregistered Gate13b analysis are still useful diagnostically, but must not be confused with the full multi-family Pareto frontier.
+
+## Gate 13c — generic continuous structured attack
+
+Attacker:
+
+- start from Gate13b's task-selected 48-row DCT pool;
+- apply a deterministic-topology learned Givens circuit;
+- no spatial position, scale, orientation, frequency or locality parameters;
+- only Givens angles are learned.
+
+Registered sizes:
 
 ```text
-M = 16, 32, 64, 128
-structured nonoscillatory derivative family
-PCA-M
-DCT-M
-full-pixel linear reference
+rounds       1    2    4    8    16
+angles R    24   48   96  192   384
+M            24 or 32
+training     3 restarts x 220 steps
 ```
 
-Common targets:
+Primary K=8/local/T95 result:
 
 ```text
-T95 = 95% of full-pixel validation accuracy
-T90 = 90% of full-pixel validation accuracy
+ATTACKER_FAIL  9 / 9
 ```
 
-The load-bearing old setting is explicitly attacked:
+No registered circuit reaches T95 at M=24 or M=32.
+
+Best-M32 shortfall to T95 across the 9 cells:
 
 ```text
-M=16
-32 geometry values
-6 bits/value
-24 map bytes
+median   0.167 percentage points
+minimum  0.033 pp
+maximum  0.434 pp
 ```
 
-Possible outcomes:
+The circuit is not inert. It raises selected-DCT M32 performance substantially:
 
 ```text
-24 B still reaches T95
-    -> stronger-than-expected expressivity result
-
-compact needs larger M / more bytes
-    -> observer cost tracks task complexity; report required resource vector
-
-nothing through M=128 reaches T90
-    -> current structured family fails expressivity; record kill
-
-PCA/DCT dominates at common target
-    -> compact description loses on this task
+selected DCT M32     roughly 79–85%
+best Givens M32      roughly 86.8–87.2%
+local geometry       roughly 87.1–87.9%
+T95                   roughly 87.0–87.4%
 ```
 
-Do not change M, codecs, targets or grayscale preprocessing after results.
+So the generic circuit recovers most of the task subspace but remains just below the registered receipt line.
+
+### Useful description-language interpretation
+
+A generic M-dimensional subspace of a 48-D pool has Grassmann dimension:
+
+```text
+M(48-M)
+```
+
+For K=8, if the useful M-dimensional subspace is constrained to contain the eight task-signal directions, the remaining family has dimension:
+
+```text
+(M-K)(48-M) = 384
+```
+
+for both M=24 and M=32.
+
+The longest Gate13c circuit has 384 learned angles.
+
+The local Gate13 M32 family uses 64 learned geometry coordinates before quantization.
+
+This is **not a lower bound** and does not rule out better generic structured parameterizations. It gives the current empirical interpretation:
+
+> **alignment makes the useful observation subspace compactly describable in the local vocabulary.**
+
+That is an inductive-bias / description-language statement.
 
 ## Prior-art boundary
 
-Broad ingredients are occupied:
+Broad ingredients are old:
 
 ```text
-learned measurement matrices       old
-structured alternatives to dense   old (Butterfly / Monarch / related)
-compact parameterized front ends   old
-post-training quantization          old
-bit-precision scaling laws          old
+learned sensing / task-aware acquisition
+sparse sensor placement
+random projections
+DCT / structured random transforms
+Givens factorizations
+Butterfly / Monarch / BTT structured matrices
+operator quantization
+multi-metric Pareto accounting
+information-based complexity / n-widths
+MDL / model-description accounting
 ```
 
-See `docs/PRIOR_ART_OBSERVER_RATE.md`.
+Do not claim novelty from any one ingredient.
 
-The candidate contribution, if anything survives, is a **measurement protocol / worked Pareto frontier**, not a new structured-matrix idea.
+The candidate contribution, if it survives more attacks, is a **worked observer-resource protocol** with a surprisingly clean structure interaction, not discovery of structured sensing.
 
-## SpectralNeuron / shared-carrier boundary tightened again
+## Strongest supported statement
 
-Common pipeline:
+> **In the frozen synthetic D x K x structure factorial, a compact local observation family reduces the number of measurements required for a common task target when task-relevant factors are aligned with that family. The advantage weakens under mixing, disappears at high K/dense rotation, survives supervised DCT row selection, and survives the tested fixed-topology generic Givens circuit with up to 384 learned angles.**
+
+Keep all qualifiers.
+
+## What remains unresolved
+
+- A stronger Butterfly/Monarch/BTT-style learned structured operator could still dominate.
+- Gate13c topology is fixed and pair indices are not learned.
+- The current output currency is **logical width M**, not literal transmitted/sample bits.
+- Real datasets do not expose K or structure as clean controlled knobs.
+- Novelty of the exact multi-currency protocol is not established.
+
+## Next legitimate experiment
+
+Do **not** build another neuron shape.
+
+Make the repeated representation rate literal:
 
 ```text
-x -> observation map C_theta -> logical z
-  -> physical/shared channel H
-  -> receiver/demux -> z_hat
-  -> decoder -> task
+L_map    one-time task-specific observation-operator bits
+L_z      per-sample representation bits after quantization
+R_task   held-out task distortion
 ```
 
-SpectralNeuron is relevant because it makes physical crosstalk visible, but FDM/MIMO itself is standard.
+Question:
 
-More importantly, the broader coupling `learn task-relevant features that survive a noisy bandwidth-limited channel` is already heavily occupied by **task-oriented / semantic communications and deep joint source-channel coding**.
+> **Does paying one-time configuration bits for an aligned observer reduce the minimum per-sample representation bits needed at the same task error?**
 
-So do **not** build a bridge merely to show that task-shaped features survive a bad channel.
+This is the clean continuation of the original intuition `stable repeated use can justify persistent structure`, but in a form that can be killed.
 
-A bridge only earns work if there is a sharper resource-accounting question not already answered by that literature, with generic linear/code-division controls from the start.
+Until this is measured, `M=32 < M=48` is only a logical-width result, not a communication-rate result.
+
+## Workflow / branch state
+
+- branch: `agent/route-grow`
+- PR #1 remains **draft**
+- `main` untouched
+- Gate13 / Gate13b / Gate13c heavy workflows are completed and returned to manual dispatch
+- routine CI remains lightweight
 
 ## Stop lines
 
 - Do not reopen growth/admission/frequency stories.
-- Do not quote parameter-count ratios as FLOP ratios.
-- Do not call fixed-P vs dense-P scaling a discovery.
-- Do not call own-ceiling rate comparisons iso-accuracy.
-- Do not call operator bytes materialized-filter RAM.
-- Do not retune Gate-11 codecs on the same digit data.
-- Do not build a Spectral bridge before checking task-oriented JSCC / semantic-communications prior art.
-
-## Next legitimate work
-
-1. Finish Gate 12 exactly as preregistered.
-2. If it survives, replicate on another genuinely different modality/task or formalize the multi-currency frontier.
-3. Reassess the shared-carrier bridge only after the semantic-communications prior-art boundary is explicit.
+- Do not call Gate13 a universal geometry law.
+- Do not call Gate13c a proof against Butterfly/Monarch.
+- Do not treat selected-DCT as a global frontier point at K8/local/T95; zero-byte DCT dominates it.
+- Do not convert M directly into bits/sample without an explicit representation codec.
+- Do not infer a scientific verdict from a green workflow badge.
