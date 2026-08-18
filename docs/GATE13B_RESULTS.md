@@ -55,7 +55,7 @@ There is no gradient descent and no restart search.
 
 The preregistered primary unit is all `3 D x 3 world seeds = 9` cells.
 
-Result:
+Under the preregistered **pairwise attacker-vs-structured** dominance rule:
 
 ```text
 ATTACKER_DOMINATES       0 / 9
@@ -64,45 +64,61 @@ TRADEOFF                 9 / 9
 ATTACKER_FAIL            0 / 9
 ```
 
-Therefore the preregistered geometry-specific kill condition (`ATTACKER_DOMINATES >= 5/9`) is **not** met.
-
-The stronger survival condition — frozen geometry remains Pareto-nondominated in at least `8/9` primary cells — is met in **9/9**.
+Therefore the preregistered geometry-specific kill condition (`ATTACKER_DOMINATES >= 5/9`) is **not** met, and the frozen geometry point remains pairwise Pareto-nondominated in `9/9` primary cells.
 
 ```text
 GEOMETRY_SPECIFIC_KEEP = survives_index_attack
 ```
 
-This does **not** mean geometry is uniquely optimal. Every primary cell is a tradeoff, not a structured domination.
+### Important post-result accounting correction
 
-## The actual primary frontier
+The pairwise `TRADEOFF` label is **not** the same as saying selected-DCT adds a new point to the global Gate-13 frontier.
 
-Across all nine K=8/local/T95 cells, the index-only attacker reaches the target at `M=48`.
+In every K=8/local/T95 primary cell, the original zero-task-specific-byte DCT baseline already reaches T95 at `M=48`.
 
-The frozen structured points are:
+Gate 13b's selected dictionary also requires `M=48`, but now pays a nonzero subset-index payload.
+
+Therefore, on the complete frontier:
 
 ```text
-seed   D       learned geometry       selected dictionary attacker
---------------------------------------------------------------------
-13100  1024    M=24   48 B            M=48   35 B
-13100  2304    M=32   64 B            M=48   42 B
-13100  4096    M=32   64 B            M=48   47 B
-
-13101  1024    M=32   96 B            M=48   35 B
-13101  2304    M=32   96 B            M=48   42 B
-13101  4096    M=32   96 B            M=48   47 B
-
-13102  1024    M=32   96 B            M=48   35 B
-13102  2304    M=32   96 B            M=48   42 B
-13102  4096    M=32   64 B            M=48   47 B
+fixed DCT prefix       M=48    L_map=0 B       reaches T95
+selected DCT           M=48    L_map=35–47 B   reaches T95
+selected signed-DCT    M=48    L_map=35–47 B   reaches T95
 ```
 
-So the new attacker sharpens rather than removes the resource exchange:
+The index-only attackers are **globally dominated by the original DCT point** in the primary cells.
 
-> **a smaller operator description is available if one accepts a wider repeated interface; the learned local family spends more task-specific configuration bits to reduce that interface from 48 measurements to 24–32.**
+So Gate 13b does not create a new low-description frontier point. It simply fails to remove the existing geometry-vs-DCT width trade.
 
-The old representative `~96 B buys 48 -> 32` statement remains a useful median description, but Gate 13b shows that its low-configuration counterpart can itself be task-adapted rather than purely task-blind.
+## Primary learned-geometry points
 
-## Full T95 dominance surface
+The frozen structured points remain:
+
+```text
+seed   D       learned geometry        original zero-byte DCT
+----------------------------------------------------------------
+13100  1024    M=24   48 B             M=48    0 B
+13100  2304    M=32   64 B             M=48    0 B
+13100  4096    M=32   64 B             M=48    0 B
+
+13101  1024    M=32   96 B             M=48    0 B
+13101  2304    M=32   96 B             M=48    0 B
+13101  4096    M=32   96 B             M=48    0 B
+
+13102  1024    M=32   96 B             M=48    0 B
+13102  2304    M=32   96 B             M=48    0 B
+13102  4096    M=32   64 B             M=48    0 B
+```
+
+Gate 13b's supervised row selection never reduces that `M=48` low-description endpoint in the nine primary cells.
+
+Thus the clean primary reading is still:
+
+> **spend zero task-specific map bytes and emit 48 DCT measurements, or spend roughly 48–96 bytes on an aligned learned observation family and emit only 24–32 measurements.**
+
+## Full T95 pairwise dominance surface
+
+The following counts compare only the new index attacker against the frozen learned geometry point, as preregistered. They should not be mistaken for the complete multi-family Pareto frontier.
 
 Counts are across `3 D x 3 world seeds = 9` cells per `(structure,K)`:
 
@@ -126,12 +142,7 @@ K=8    ATTACKER_DOMINATES 9
 K=16   ATTACKER_DOMINATES 8      TRADEOFF 1
 ```
 
-This is more informative than a single win/loss:
-
-1. **aligned, low-K tasks:** learned local geometry often strictly dominates index-only selection;
-2. **aligned, intermediate K:** both families occupy the Pareto frontier;
-3. **aligned K=16:** the local family exhausts its useful bias and the cheaper shared dictionary usually dominates;
-4. **mixed/dense tasks:** index-only generic structure increasingly dominates as expected when locality is no longer a privileged description.
+The pairwise pattern still supports a useful qualitative conclusion: as locality is destroyed or K rises, the local learned family loses its compact inductive-bias advantage. But global-frontier claims must always include the original DCT/random points.
 
 ## What Gate 13b kills
 
@@ -159,7 +170,7 @@ Gate 13b is still a restricted shared-dictionary attacker. A generic compact con
 
 After Gate 13 and Gate 13b, the defensible synthetic statement is:
 
-> **When task-relevant structure is aligned with a restricted local sensing family, spending additional task-specific configuration description can buy a smaller repeated measurement interface. A supervised index-only shared transform does not erase that exchange at K=8, but it becomes increasingly competitive and eventually dominant as task complexity rises or spatial alignment is destroyed.**
+> **When task-relevant structure is aligned with a restricted local sensing family, spending additional task-specific configuration description can buy a smaller repeated measurement interface. Supervised row selection from a shared DCT or signed-DCT dictionary does not reduce the zero-byte DCT endpoint's required width at K=8, so it does not erase the observed 48 -> 24–32 interface trade.**
 
 That is a resource-frontier result, not a claim that geometry universally wins.
 
@@ -167,14 +178,4 @@ That is a resource-frontier result, not a claim that geometry universally wins.
 
 Before opening a two-rate representation-quantization experiment, the remaining structural attacker should be a **generic trainable short-description operator family** rather than another handpicked fixed dictionary.
 
-Good candidates include:
-
-```text
-small learned Givens-rotation / orthogonal circuit around a shared transform
-Butterfly-like sparse orthogonal stages
-small learned block/Monarch transform
-```
-
-The test should hold deployment description and logical width explicit and should not give the local family an architectural vocabulary unavailable to the generic structured attacker.
-
-If a generic compact learned transform dominates the Gate-13 local points, retain the task-adapted sensing exchange and retire the geometry-specific interpretation.
+Gate 13c preregisters exactly that attack using a compact learned Givens-rotation circuit around the 48-row shared-transform pool.
