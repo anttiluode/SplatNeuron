@@ -1,13 +1,7 @@
 name: Gate 13c generic Givens attacker
 
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/gate13c_givens_attack.yml"
-      - "experiments/gate13c_givens_attack.py"
-      - "experiments/gate13b_index_only_attackers.py"
-      - "experiments/gate13_dks_preflight.py"
-      - "docs/GATE13C_PREREG_GIVENS_ATTACK.md"
+  workflow_dispatch:
 
 jobs:
   attack:
