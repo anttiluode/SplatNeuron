@@ -1,8 +1,8 @@
 name: Gate 13 D-K-structure preflight
 
 on:
-  push:
-    branches: ["agent/route-grow"]
+  pull_request:
+    branches: ["main"]
     paths:
       - ".github/workflows/gate13_dks_preflight.yml"
       - "experiments/gate13_dks_preflight.py"
