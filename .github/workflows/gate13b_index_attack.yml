@@ -1,12 +1,7 @@
 name: Gate 13b index-only attackers
 
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/gate13b_index_attack.yml"
-      - "experiments/gate13b_index_only_attackers.py"
-      - "experiments/gate13_dks_preflight.py"
-      - "docs/GATE13B_PREREG_INDEX_ONLY_ATTACKERS.md"
+  workflow_dispatch:
 
 jobs:
   attack:
